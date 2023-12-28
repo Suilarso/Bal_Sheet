@@ -140,6 +140,42 @@ class SubAccount():
     def __del__(self):
         print('Destructor for SubAccount class')
 
+#SJ1181223 - This class setup GUI for bank account entry screen
+class BankAccount():
+    def __init__(self, mainWidget, bankAcctDB):
+        self.bankAcctDB = bankAcctDB
+        #self.account = ''
+        #self.desc = ''
+        self.bankCode = ''
+        self.bankName = ''
+        self.amount = 0.0
+        self.exchangeRate = 0.0
+        self.cadAmount = 0.0  #SJ6231223 - Is this var needed at all
+        #SJ3271223 - Bank code entry field
+        self.bankCodeLabelRow = 1
+        self.bankCodeLabelCol = 1
+        self.bankCodeEntryRow = self.bankCodeLabelRow  #Row 1
+        self.bankCodeEntryCol = self.bankCodeLabelCol + 1  #Col 2
+        #SJ3271223 - Bank name entry field
+        self.bankNameLabelRow = self.bankCodeLabelRow
+        self.bankNameLabelCol = self.bankCodeEntryCol + 1  #Col 3
+        self.bankNameeEntryRow = self.bankNameLabelRow  #Row 1
+        self.bankNameEntryCol = self.bankNameLabelCol + 1  #Col 4
+#SJ6231223 - SJSTOP_HERE
+        self.descriptionLabelRow = self.subAcctLabelRow + 2  #Row 3
+        self.descriptionLabelCol = 1
+        self.descriptionEntryRow = self.descriptionLabelRow  #Row 3
+        self.descriptionEntryCol = self.descriptionLabelCol + 1  #Col 2
+
+        self.cancelButtonRow = self.descriptionLabelRow + 2  #Row 5
+        self.cancelButtonCol = 1
+        self.saveButtonRow = self.cancelButtonRow
+        self.saveButtonCol = self.cancelButtonCol + 1  #Col 2
+        self.setupSubAcctScreen(mainWidget)
+        pass
+
+    def __del__(self):
+        print('Destructor for BankAccount class')
 
 
 #SJ1170423 - This class attempt to setup an sql connection
