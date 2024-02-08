@@ -151,27 +151,76 @@ class BankAccount():
         self.amount = 0.0
         self.exchangeRate = 0.0
         self.cadAmount = 0.0  #SJ6231223 - Is this var needed at all
-        #SJ3271223 - Bank code entry field
+
+        #SJ3271223 - Bank code entry field coordinate - row 1 col 1, 2
         self.bankCodeLabelRow = 1
         self.bankCodeLabelCol = 1
         self.bankCodeEntryRow = self.bankCodeLabelRow  #Row 1
         self.bankCodeEntryCol = self.bankCodeLabelCol + 1  #Col 2
-        #SJ3271223 - Bank name entry field
+        #SJ3271223 - Bank name entry field coordinate - row 1 col 4, 5
         self.bankNameLabelRow = self.bankCodeLabelRow
-        self.bankNameLabelCol = self.bankCodeEntryCol + 1  #Col 3
-        self.bankNameeEntryRow = self.bankNameLabelRow  #Row 1
-        self.bankNameEntryCol = self.bankNameLabelCol + 1  #Col 4
-#SJ6231223 - SJSTOP_HERE
-        self.descriptionLabelRow = self.subAcctLabelRow + 2  #Row 3
-        self.descriptionLabelCol = 1
-        self.descriptionEntryRow = self.descriptionLabelRow  #Row 3
-        self.descriptionEntryCol = self.descriptionLabelCol + 1  #Col 2
+        self.bankNameLabelCol = self.bankCodeEntryCol + 2  #Col 4
+        self.bankNameEntryRow = self.bankNameLabelRow  #Row 1
+        self.bankNameEntryCol = self.bankNameLabelCol + 1  #Col 5
 
-        self.cancelButtonRow = self.descriptionLabelRow + 2  #Row 5
+        #SJ4281223 - Amount entry field coordinate - row 3 col 1, 2
+        self.amountLabelRow = self.bankCodeLabelRow + 2  #Row 3
+        self.amountLabelCol = 1
+        self.amountEntryRow = self.amountLabelRow  #Row 3
+        self.amountEntryCol = self.amountLabelCol + 1  #Col 2
+        #SJ4281223 - Exchange rate entry field coordinate - row 3 col 4, 5
+        self.exchangeRateLabelRow = self.amountLabelRow  #Row 3
+        self.exchangeRateLabelCol = self.amountEntryCol + 2  #Col 4
+        self.exchangeRateEntryRow = self.exchangeRateLabelRow  #Row 3
+        self.exchangeRateEntryCol = self.exchangeRateLabelCol + 1 #Col 5
+
+        #SJ3030124 - Cancel and Save Button - row 5
+        self.cancelButtonRow = self.exchangeRateLabelRow + 2  #Row 5
         self.cancelButtonCol = 1
         self.saveButtonRow = self.cancelButtonRow
         self.saveButtonCol = self.cancelButtonCol + 1  #Col 2
-        self.setupSubAcctScreen(mainWidget)
+        self.setupBankAcctScreen(mainWidget)
+
+    def setupBankAcctScreen(self, mainWidget):
+        """This method is used to setup data entry screen for Bank Account. It contains four fields: Bank code, Bank name, Amount,
+           and Exchange rate."""
+
+        #SJ4040124 - Bank code
+        self.bankcodeLabel = Label(mainWidget, text='Bank Code: ').grid(row=self.bankCodeLabelRow, column=self.bankCodeLabelCol, padx=5, pady=5)
+        self.bankCode = Entry(mainWidget)
+        self.bankCode.grid(row=self.bankCodeEntryRow, column=self.bankCodeEntryCol, padx=5, pady=5)
+
+        #SJ4040124 - Bank name
+        self.bankNameLabel = Label(mainWidget, text='Description: ').grid(row=self.bankNameLabelRow, column=self.bankNameLabelCol, pady=5)
+        self.bankName = Entry(mainWidget)
+        self.bankName.grid(row=self.bankNameEntryRow, column=self.bankNameEntryCol, pady=5)
+
+        #SJ4040124 - Amount
+        #self.amount = 0.0
+        self.amountLabel = Label(mainWidget, text='Amount: ').grid(row=self.amountLabelRow, column=self.amountLabelCol)
+        self.amount = Entry(mainWidget)
+        self.amount.insert(0, '1')
+        self.amount.grid(row=self.amountEntryRow, column=self.amountEntryCol)
+
+        #SJ3070224 - Exchange rate
+        self.exchangeRateLabel = Label(mainWidget, text='Exchange rate: ').grid(row=self.exchangeRateLabelRow, column=self.exchangeRateLabelCol)
+        self.exchangeRate = Entry(mainWidget)
+        self.exchangeRate.insert(0, '1')
+        self.exchangeRate.grid(row=self.exchangeRateEntryRow, column=self.exchangeRateEntryCol)
+
+        self.cadAmount = 0.0
+
+        #SJ3070224 - Cancel and Save button
+        self.cancelButton = Button(text='Cancel', command=lambda x=mainWidget: self.cancelButtonCallback(x))
+        self.cancelButton.grid(row=self.cancelButtonRow, column=self.cancelButtonCol, pady=10)
+        self.saveButton = Button(text='Save', command=lambda x=mainWidget: self.saveButtonCallback(x))
+        self.saveButton.grid(row=self.saveButtonRow, column=self.saveButtonCol)
+
+        #self.initializeSubAcctScreen(mainWidget)
+    def cancelButtonCallback(self, mainWidget):
+        pass
+
+    def saveButtonCallback(self, mainWidget):
         pass
 
     def __del__(self):
@@ -257,6 +306,7 @@ mainWindow.protocol('WM_DELETE_WINDOW', quitter_function)
 mainAcctDB = SetupSQLConnection('./dbase/financialDB.sqlite', 'mainAcct', ['mainAcct', 'description'])
 #app = MainAccount(mainWindow, mainAcctDB)
 subAcctDB =  SetupSQLConnection('./dbase/financialDB.sqlite', 'subAcct', ['subAcct', 'description'])
-#app = MainAccount(mainWindow, mainAcctDB)
-app = SubAccount(mainWindow, subAcctDB)
+#app = SubAccount(mainWindow, subAcctDB)
+bankAcctDB =  SetupSQLConnection('./dbase/financialDB.sqlite', 'bankAcct', ['bankCode', 'bank', 'amount', 'xchangeRate', 'cadAmount'])
+app = BankAccount(mainWindow, bankAcctDB)
 mainloop()  #SJ5310323 - Creating long-running event loop
