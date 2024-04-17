@@ -143,9 +143,11 @@ class SubAccount():
 #SJ1181223 - This class setup GUI for bank account entry screen
 class BankAccount():
     def __init__(self, mainWidget, bankAcctDB):
+        self.bankAcctWidget = mainWidget
         self.bankAcctDB = bankAcctDB
         #self.account = ''
         #self.desc = ''
+        self.currentField = ''
         self.bankCode = ''
         self.bankName = ''
         self.amount = 0.0
@@ -179,7 +181,7 @@ class BankAccount():
         self.cancelButtonCol = 1
         self.saveButtonRow = self.cancelButtonRow
         self.saveButtonCol = self.cancelButtonCol + 1  #Col 2
-        self.setupBankAcctScreen(mainWidget)
+        self.setupBankAcctScreen(self.bankAcctWidget)
 
     def setupBankAcctScreen(self, mainWidget):
         """This method is used to setup data entry screen for Bank Account. It contains four fields: Bank code, Bank name, Amount,
@@ -199,13 +201,13 @@ class BankAccount():
         #self.amount = 0.0
         self.amountLabel = Label(mainWidget, text='Amount: ').grid(row=self.amountLabelRow, column=self.amountLabelCol)
         self.amount = Entry(mainWidget)
-        self.amount.insert(0, '1')
+        #self.amount.insert(0, '1')
         self.amount.grid(row=self.amountEntryRow, column=self.amountEntryCol)
 
         #SJ3070224 - Exchange rate
         self.exchangeRateLabel = Label(mainWidget, text='Exchange rate: ').grid(row=self.exchangeRateLabelRow, column=self.exchangeRateLabelCol)
         self.exchangeRate = Entry(mainWidget)
-        self.exchangeRate.insert(0, '1')
+        #self.exchangeRate.insert(0, '1')
         self.exchangeRate.grid(row=self.exchangeRateEntryRow, column=self.exchangeRateEntryCol)
 
         self.cadAmount = 0.0
@@ -216,15 +218,78 @@ class BankAccount():
         self.saveButton = Button(text='Save', command=lambda x=mainWidget: self.saveButtonCallback(x))
         self.saveButton.grid(row=self.saveButtonRow, column=self.saveButtonCol)
 
-        #self.initializeSubAcctScreen(mainWidget)
+        mainWidget.bind("<Button-1>", self.leftButtonReleasedCallback)
+        #mainWidget.bind("<ButtonRelease-1>", self.leftButtonReleasedCallback)
+
+        self.initializeBankAcctScreen(mainWidget)
+
+    def initializeBankAcctScreen(self, mainWidget):
+        self.bankCode.delete(0, END)
+        self.bankCode.focus_set()
+        self.currentField = 1
+        self.bankName.delete(0, END)
+        self.amount.delete(0, END)
+        self.exchangeRate.delete(0, END)
+        self.exchangeRate.insert(0, '1')
+
+    def verifyBankAcctData(self, mainWidget):
+
+        tempBankCode = self.bankCode.get().strip()
+        tempBankName = self.bankName.get().strip()
+        #self.bankCode.focus_set()
+        #self.bankName.delete(0, END)
+        #self.amount.delete(0, END)
+        #self.exchangeRate.delete(0, END)
+        #self.exchangeRate.insert(0, '1')
+        pass
+
     def cancelButtonCallback(self, mainWidget):
+        #SJ1120224 - Here we need to re-initilize date entry screen.
         pass
 
     def saveButtonCallback(self, mainWidget):
-        pass
+        #self.cadAmount = 0.0
+        tempBankCode = self.bankCode.get()
+        retRecords = self.bankAcctDB.readRecord("bankCode", tempBankCode)
+        #totalRecords = len(retRecords)
+        if (len(retRecords) > 0):  #SJ3280224 - record already exist in bankAcctDB table
+            showwarning(title="Duplicate", message=tempBankCode+" already exist in bankAcct table")
+        else:
+            tempAmount = eval(self.amount.get())
+            tempExchangeRate = eval(self.exchangeRate.get())
+            tempCADAmount = tempAmount * tempExchangeRate
+            #print('bank code, bank name, temp amnt, temp exchange rate, temp cad amt: ', self.bankCode.get(), self.bankName.get(), tempAmount, tempExchangeRate, tempCADAmount)
+            self.bankAcctDB.saveRecords(self.bankCode.get(), self.bankName.get(), tempAmount, tempExchangeRate, tempCADAmount)
+            self.initializeBankAcctScreen(mainWidget)
+
+    def leftButtonReleasedCallback(self, event):
+        childList = str(self.bankAcctWidget.winfo_children()[0].focus_get())
+        ndx = strLength = len(childList)
+        while ndx > 0:
+            if (childList[ndx-1] in '0123456789'):
+                ndx -= 1
+            else:
+                break
+        sliceAmt = ndx - strLength
+        clickedField = 1 if (sliceAmt == 0) else int(childList[sliceAmt:])
+        #SJ2160424 - Here we check for mandatory field being skipped without keying in any data
+        if (self.currentField != clickedField):  #SJ2160424 - jump to other fields
+            if (self.currentField == 1):
+                self.currentField = clickedField
+                tempBankCode = self.bankCode.get().strip()
+                if (len(tempBankCode) == 0):
+                    print('Mandatory field...')
+                    self.bankCode.focus_set()
+                    self.currentField = 1
+            else:
+                self.currentField = clickedField
+        print(self.currentField)
 
     def __del__(self):
         print('Destructor for BankAccount class')
+        print('Unbinding button release 1')
+        #self.bankAcctWidget.unbind("<Button-1>")
+        #self.bankAcctWidget.unbind("<ButtonRelease-1>")
 
 
 #SJ1170423 - This class attempt to setup an sql connection
@@ -291,7 +356,7 @@ class SetupSQLConnection():
         self.conn.close()
 
     def __del__(self):
-        print('Destructor for SetupSQLConnection class')
+        print('Destructor for SetupSQLConnection class: ', self.tableName)
 
 def quitter_function():
     print('quitter_function: Closing sql connection and destroy root object...')
@@ -308,5 +373,7 @@ mainAcctDB = SetupSQLConnection('./dbase/financialDB.sqlite', 'mainAcct', ['main
 subAcctDB =  SetupSQLConnection('./dbase/financialDB.sqlite', 'subAcct', ['subAcct', 'description'])
 #app = SubAccount(mainWindow, subAcctDB)
 bankAcctDB =  SetupSQLConnection('./dbase/financialDB.sqlite', 'bankAcct', ['bankCode', 'bank', 'amount', 'xchangeRate', 'cadAmount'])
+#bankAcctWindow = Frame(mainWindow) #, width=5000, height=3000)
+#app = BankAccount(bankAcctWindow, bankAcctDB)
 app = BankAccount(mainWindow, bankAcctDB)
 mainloop()  #SJ5310323 - Creating long-running event loop
