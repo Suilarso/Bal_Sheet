@@ -130,7 +130,6 @@ class SubAccount():
         #print('MainAccount--> Main acct: {0}, Description: {1}'.format(self.mainAcct.get(), self.description.get()))
         tempSubAcct = self.subAcct.get()
         retRecords = self.subAcctDB.readRecord("SubAcct", tempSubAcct)
-        #totalRecords = len(retRecords)
         if (len(retRecords) > 0):  #SJ1131123 - record already exist in mainAcct table
             showwarning(title="Duplicate", message=tempSubAcct+" already exist in subAcct table")
         else:
@@ -218,7 +217,7 @@ class BankAccount():
         self.saveButton = Button(text='Save', command=lambda x=mainWidget: self.saveButtonCallback(x))
         self.saveButton.grid(row=self.saveButtonRow, column=self.saveButtonCol)
 
-        mainWidget.bind("<Button-1>", self.leftButtonReleasedCallback)
+        #mainWidget.bind("<Button-1>", self.leftButtonReleasedCallback)
         #mainWidget.bind("<ButtonRelease-1>", self.leftButtonReleasedCallback)
 
         self.initializeBankAcctScreen(mainWidget)
@@ -232,36 +231,87 @@ class BankAccount():
         self.exchangeRate.delete(0, END)
         self.exchangeRate.insert(0, '1')
 
+    #SJ4180424 - Here we check for possible duplicate bank account record, and also for valid float
+    #SJ4180424 - data is being keyed in.
     def verifyBankAcctData(self, mainWidget):
+        numOfField = 4
+        fieldBeingVerified = 1
+        returnFlag = False
+        while (fieldBeingVerified <= numOfField):
+            #SJ1220424 - Examine bankCode field; two test to be carried out: check empty field
+            #SJ1220424 - and check for duplicate record
+            if fieldBeingVerified == 1:
+                tempBankCode = self.bankCode.get().strip()
+                if (len(tempBankCode) > 0):
+                    #SJ5190424 - Bank code is not blank, so proceed to check for duplicate record
+                    retRecords = self.bankAcctDB.readRecord("bankCode", tempBankCode)
+                    if (len(retRecords) > 0):  #SJ5190424 - record already exist in bankAcctDB table
+                        showwarning(title="Duplicate", message=tempBankCode+" already exist in bankAcct table")
+                        self.bankCode.focus_set()
+                        break
+                else:
+                    #SJ1220424 - bankCode field is blank
+                    showerror(title="Mandatory Field", message="Bank code cannot be blank")
+                    self.bankCode.focus_set()
+                    break
 
-        tempBankCode = self.bankCode.get().strip()
-        tempBankName = self.bankName.get().strip()
-        #self.bankCode.focus_set()
-        #self.bankName.delete(0, END)
-        #self.amount.delete(0, END)
-        #self.exchangeRate.delete(0, END)
-        #self.exchangeRate.insert(0, '1')
-        pass
+                fieldBeingVerified += 1
+
+            #SJ1220424 - Examine bankName field; just need to examine for empty field
+            elif fieldBeingVerified == 2:
+                tempBankName = self.bankName.get().strip()
+                if (len(tempBankName) == 0):
+                    showerror(title="Mandatory Field", message="Bank name cannot be blank")
+                    self.bankName.focus_set()
+                    break
+
+                fieldBeingVerified += 1
+
+            #SJ2230424 - Examine the input to amount field is indeed convertible to real number
+            elif fieldBeingVerified == 3:
+                tmpAmount = self.amount.get().strip()
+                if (not (tmpAmount.isdigit())):
+                    showerror(title="Invalid Input", message="Expect real number")
+                    self.amount.focus_set()
+                    break
+
+                fieldBeingVerified += 1
+
+            #SJ2230424 - Examine the input to exchangeRate field is indeed convertible to real number
+            elif fieldBeingVerified == 4:
+                tmpExchangeRate = self.exchangeRate.get().strip()
+                if (not (tmpExchangeRate.isdigit())):
+                    showerror(title="Invalid Input", message="Expect real number")
+                    self.exchangeRate.focus_set()
+                    break
+
+                fieldBeingVerified += 1
+            #else:
+                print('verifyBankAcctData: All input data are valid')
+                returnFlag = True
+                #pass
+
+        return returnFlag
 
     def cancelButtonCallback(self, mainWidget):
         #SJ1120224 - Here we need to re-initilize date entry screen.
         pass
 
     def saveButtonCallback(self, mainWidget):
-        #self.cadAmount = 0.0
-        tempBankCode = self.bankCode.get()
-        retRecords = self.bankAcctDB.readRecord("bankCode", tempBankCode)
-        #totalRecords = len(retRecords)
-        if (len(retRecords) > 0):  #SJ3280224 - record already exist in bankAcctDB table
-            showwarning(title="Duplicate", message=tempBankCode+" already exist in bankAcct table")
-        else:
+        if (self.verifyBankAcctData(mainWidget)):
+            #self.cadAmount = 0.0
             tempAmount = eval(self.amount.get())
             tempExchangeRate = eval(self.exchangeRate.get())
             tempCADAmount = tempAmount * tempExchangeRate
-            #print('bank code, bank name, temp amnt, temp exchange rate, temp cad amt: ', self.bankCode.get(), self.bankName.get(), tempAmount, tempExchangeRate, tempCADAmount)
+            print('bank code, bank name, temp amnt, temp exchange rate, temp cad amt: ', self.bankCode.get(), self.bankName.get(), tempAmount, tempExchangeRate, tempCADAmount)
             self.bankAcctDB.saveRecords(self.bankCode.get(), self.bankName.get(), tempAmount, tempExchangeRate, tempCADAmount)
             self.initializeBankAcctScreen(mainWidget)
 
+    #SJ4180424 - This method is meant to warn user whenever a mandatory is left blank when moving
+    #SJ$180424 - from one mandatory to another field, but it turns out that the implementation is
+    #SJ4180424 - not straight forward for entry screen with more than one mandatory field. As such,
+    #SJ4180424 - will abandon this idea for now, may re-visit this idea in the future. In the mean
+    #SJ4180424 - will do all the validity check after the user click on the save button.
     def leftButtonReleasedCallback(self, event):
         childList = str(self.bankAcctWidget.winfo_children()[0].focus_get())
         ndx = strLength = len(childList)
@@ -278,12 +328,19 @@ class BankAccount():
                 self.currentField = clickedField
                 tempBankCode = self.bankCode.get().strip()
                 if (len(tempBankCode) == 0):
-                    print('Mandatory field...')
+                    showerror(title="Mandatory Field", message="Bank code cannot be blank.")
                     self.bankCode.focus_set()
                     self.currentField = 1
+            elif (self.currentField == 2):
+                self.currentField = clickedField
+                tempBankName = self.bankName.get().strip()
+                if (len(tempBankName) == 0):
+                    showerror(title="Mandatory Field", message="Bank name cannot be blank.")
+                    self.bankName.focus_set()
+                    self.currentField = 2
             else:
                 self.currentField = clickedField
-        print(self.currentField)
+        print('Current field: ', self.currentField)
 
     def __del__(self):
         print('Destructor for BankAccount class')
@@ -327,12 +384,10 @@ class SetupSQLConnection():
         readData = self.tableCursor.fetchall()  #SJ0121123 - if use fetchall check using len
         #totalRecords = len(readData)
         print('Inside readRecord: ', readData)
-
+        
         return readData
-        #curCursor.execute('SELECT workOrder, customerName, dateReceived FROM werChecklist WHERE dateReceived >= ? AND dateReceived < ?', (fromDate, toDate))
-        #totalRecords = len(recData)
 
-        #curCursor.execute('SELECT workOrder FROM werChecklist WHERE workOrder = ? LIMIT 1', (self.workOrder, ))
+        #curCursor.execute('SELECT workOrder FROM xxxTableName WHERE workOrder = ? LIMIT 1', (self.workOrder, ))
         #count = curCursor.fetchone()
         #if count != None:
             #count = curCursor.fetchone()[0]
