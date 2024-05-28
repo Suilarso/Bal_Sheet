@@ -3,6 +3,7 @@
 
 from tkinter import *
 from tkinter.messagebox import *
+from datetime import datetime
 import sqlite3
 
 #SJ4300323 - This class setup Main Account data entry screen
@@ -311,7 +312,7 @@ class BankAccount():
     #SJ$180424 - from one mandatory to another field, but it turns out that the implementation is
     #SJ4180424 - not straight forward for entry screen with more than one mandatory field. As such,
     #SJ4180424 - will abandon this idea for now, may re-visit this idea in the future. In the mean
-    #SJ4180424 - will do all the validity check after the user click on the save button.
+    #SJ4180424 - time will do all the validity check after the user click on the save button.
     def leftButtonReleasedCallback(self, event):
         childList = str(self.bankAcctWidget.winfo_children()[0].focus_get())
         ndx = strLength = len(childList)
@@ -348,6 +349,24 @@ class BankAccount():
         #self.bankAcctWidget.unbind("<Button-1>")
         #self.bankAcctWidget.unbind("<ButtonRelease-1>")
 
+#SJ1270523 - This class setup GUI for daily transaction entry screen.
+#SJ1270524 - The data keyed in the entry screen are to be saved in sjAcct table
+class SjAccount():
+    def __init__(self, mainWidget, sjAcctDB):
+        self.sjAcctWidget = mainWidget
+        self.sjAcctDB = sjAcctDB
+        self.date = datetime(1,1,1).now()  #SJ1270524 - Getting today system date
+        self.mainAcct = ''
+        self.subAcct = ''
+        self.beacon = ''
+        self.amount = 0.0
+        self.exchangeRate = 0.0
+        self.cadAmount = 0.0  #SJ6231223 - Is this var needed at all
+        print('inside SjAccount: ', sjAcctDB)
+        pass
+
+    def __del__(self):
+        print('Destructor for SjAccount class')
 
 #SJ1170423 - This class attempt to setup an sql connection
 class SetupSQLConnection():
@@ -425,10 +444,14 @@ mainWindow.protocol('WM_DELETE_WINDOW', quitter_function)
 #SJ3190423 - Setup Main Account SQL connection
 mainAcctDB = SetupSQLConnection('./dbase/financialDB.sqlite', 'mainAcct', ['mainAcct', 'description'])
 #app = MainAccount(mainWindow, mainAcctDB)
-subAcctDB =  SetupSQLConnection('./dbase/financialDB.sqlite', 'subAcct', ['subAcct', 'description'])
+subAcctDB = SetupSQLConnection('./dbase/financialDB.sqlite', 'subAcct', ['subAcct', 'description'])
 #app = SubAccount(mainWindow, subAcctDB)
-bankAcctDB =  SetupSQLConnection('./dbase/financialDB.sqlite', 'bankAcct', ['bankCode', 'bank', 'amount', 'xchangeRate', 'cadAmount'])
+bankAcctDB = SetupSQLConnection('./dbase/financialDB.sqlite', 'bankAcct', ['bankCode', 'bank', 'amount', 'xchangeRate', 'cadAmount'])
+#app = BankAccount(mainWindow, bankAcctDB)
+
 #bankAcctWindow = Frame(mainWindow) #, width=5000, height=3000)
 #app = BankAccount(bankAcctWindow, bankAcctDB)
-app = BankAccount(mainWindow, bankAcctDB)
+
+sjAcctDB = SetupSQLConnection('./dbase/financialDB.sqlite', 'sjAcct', ['date', 'mainAcct', 'subAcct', 'beacon', 'amount', 'db_cr', 'post_to', 'status', 'remark'])
+app = SjAccount(mainWindow, sjAcctDB)
 mainloop()  #SJ5310323 - Creating long-running event loop
