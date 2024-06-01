@@ -3,7 +3,8 @@
 
 from tkinter import *
 from tkinter.messagebox import *
-from datetime import datetime
+from tkcalendar import DateEntry  #SJ4300524 - 
+from datetime import datetime  #SJ2280524
 import sqlite3
 
 #SJ4300323 - This class setup Main Account data entry screen
@@ -354,16 +355,43 @@ class BankAccount():
 class SjAccount():
     def __init__(self, mainWidget, sjAcctDB):
         self.sjAcctWidget = mainWidget
+        self.sjAcctWidget.geometry("750x500")
         self.sjAcctDB = sjAcctDB
-        self.date = datetime(1,1,1).now()  #SJ1270524 - Getting today system date
+        self.transDate = datetime(1,1,1).now()  #SJ1270524 - Getting today system date
+        self.date = ''
         self.mainAcct = ''
         self.subAcct = ''
         self.beacon = ''
         self.amount = 0.0
-        self.exchangeRate = 0.0
-        self.cadAmount = 0.0  #SJ6231223 - Is this var needed at all
-        print('inside SjAccount: ', sjAcctDB)
-        pass
+        self.db_cr = ''
+        self.postTo = ''
+        self.status = ''
+        self.remark = ''
+
+        #SJ2280524 - Local variables for X-Y coordinate
+        self.transDateLabelX = 5
+        self.transDateLabelY = 5
+        self.transDateEntryX = self.transDateLabelX + 150 #X = 5
+        self.transDateEntryY = self.transDateLabelY  #Col 2
+        self.mainAcctLabelX = 5
+        self.mainAcctLabelY = self.transDateLabelY + 25
+        self.mainAcctEntryX = self.mainAcctLabelX + 150
+        self.mainAcctEntryY = self.mainAcctLabelY
+        self.setupSjAcctScreen()
+
+    def setupSjAcctScreen(self):
+        """This method is used to setup data entry screen for SJ Account. It contains nine fields: Date, Main Acct, Sub-acct, beacon, 
+           Amount, db_cr, Post to, Status, and Remark."""
+    
+        #SJ4300524 - Input field for transaction Date
+        self.transDate = datetime(1,1,1).now()  #SJ4300524 - Getting today system date
+        self.transDateLabel = Label(self.sjAcctWidget, text='Transaction Date: ').place(x=self.transDateLabelX, y=self.transDateLabelY)
+        self.date = DateEntry(self.sjAcctWidget, values="Text", year=self.transDate.year, state="readonly", date_pattern="yyyy-mm-dd")
+        self.date.place(x=self.transDateEntryX, y=self.transDateEntryY)
+        #SJ2280524 - Main Account label
+        self.mainAcctLabel = Label(self.sjAcctWidget, text='Main Acct: ').place(x=self.mainAcctLabelX, y=self.mainAcctLabelY)#, width=120, height=25)
+        self.mainAcct = Entry(self.sjAcctWidget)
+        self.mainAcct.place(x=self.mainAcctEntryX, y=self.mainAcctEntryY)
 
     def __del__(self):
         print('Destructor for SjAccount class')
