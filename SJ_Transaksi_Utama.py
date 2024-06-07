@@ -369,14 +369,33 @@ class SjAccount():
         self.remark = ''
 
         #SJ2280524 - Local variables for X-Y coordinate
+        self.rowGapConstant = 10
+        self.fieldHeightConstant = 22
+        
         self.transDateLabelX = 5
         self.transDateLabelY = 5
         self.transDateEntryX = self.transDateLabelX + 150 #X = 5
         self.transDateEntryY = self.transDateLabelY  #Col 2
+        self.transDateEntryWidth = 98
+
         self.mainAcctLabelX = 5
-        self.mainAcctLabelY = self.transDateLabelY + 25
+        self.mainAcctLabelY = self.transDateLabelY + self.fieldHeightConstant + self.rowGapConstant
         self.mainAcctEntryX = self.mainAcctLabelX + 150
         self.mainAcctEntryY = self.mainAcctLabelY
+        self.mainAcctEntryWidth = 100
+        
+        self.subAcctLabelX = 5
+        self.subAcctLabelY = self.mainAcctLabelY + self.fieldHeightConstant + self.rowGapConstant
+        self.subAcctEntryX = self.subAcctLabelX + 150
+        self.subAcctEntryY = self.subAcctLabelY
+        self.subAcctEntryWidth = 100
+       
+        self.beaconLabelX = 5
+        self.beaconLabelY = self.subAcctLabelY + self.fieldHeightConstant + self.rowGapConstant
+        self.beaconEntryX = self.beaconLabelX + 150
+        self.beaconEntryY = self.beaconLabelY
+        self.beaconEntryWidth = 50
+
         self.setupSjAcctScreen()
 
     def setupSjAcctScreen(self):
@@ -387,11 +406,20 @@ class SjAccount():
         self.transDate = datetime(1,1,1).now()  #SJ4300524 - Getting today system date
         self.transDateLabel = Label(self.sjAcctWidget, text='Transaction Date: ').place(x=self.transDateLabelX, y=self.transDateLabelY)
         self.date = DateEntry(self.sjAcctWidget, values="Text", year=self.transDate.year, state="readonly", date_pattern="yyyy-mm-dd")
-        self.date.place(x=self.transDateEntryX, y=self.transDateEntryY)
-        #SJ2280524 - Main Account label
-        self.mainAcctLabel = Label(self.sjAcctWidget, text='Main Acct: ').place(x=self.mainAcctLabelX, y=self.mainAcctLabelY)#, width=120, height=25)
+        self.date.place(x=self.transDateEntryX, y=self.transDateEntryY, width = self.transDateEntryWidth, height = self.fieldHeightConstant)
+        #SJ2280524 - Main Account field
+        self.mainAcctLabel = Label(self.sjAcctWidget, text='Main Acct: ').place(x=self.mainAcctLabelX, y=self.mainAcctLabelY)
         self.mainAcct = Entry(self.sjAcctWidget)
-        self.mainAcct.place(x=self.mainAcctEntryX, y=self.mainAcctEntryY)
+        self.mainAcct.place(x=self.mainAcctEntryX, y=self.mainAcctEntryY, width=self.mainAcctEntryWidth, height=self.fieldHeightConstant)
+        #SJ4060624 - Sub Account field 
+        self.subAcctLabel = Label(self.sjAcctWidget, text='Sub Acct: ').place(x=self.subAcctLabelX, y=self.subAcctLabelY)
+        self.subAcct = Entry(self.sjAcctWidget)
+        self.subAcct.place(x=self.subAcctEntryX, y=self.subAcctEntryY, width=self.subAcctEntryWidth, height=self.fieldHeightConstant)
+        #SJ4060624 - beacon field
+        self.beaconLabel = Label(self.sjAcctWidget, text='Beacon: ').place(x=self.beaconLabelX, y=self.beaconLabelY)
+        self.beacon = Entry(self.sjAcctWidget)
+        self.beacon.place(x=self.beaconEntryX, y=self.beaconEntryY, width=self.beaconEntryWidth, height=self.fieldHeightConstant)
+
 
     def __del__(self):
         print('Destructor for SjAccount class')
