@@ -369,32 +369,65 @@ class SjAccount():
         self.remark = ''
 
         #SJ2280524 - Local variables for X-Y coordinate
+        self.leftMargin = 5
+        self.topMargin = 5
         self.rowGapConstant = 10
         self.fieldHeightConstant = 22
+        self.labelEntryGap = 150
         
-        self.transDateLabelX = 5
-        self.transDateLabelY = 5
-        self.transDateEntryX = self.transDateLabelX + 150 #X = 5
+        self.transDateLabelX = self.leftMargin
+        self.transDateLabelY = self.topMargin
+        self.transDateEntryX = self.transDateLabelX + self.labelEntryGap
         self.transDateEntryY = self.transDateLabelY  #Col 2
         self.transDateEntryWidth = 98
 
-        self.mainAcctLabelX = 5
+        self.mainAcctLabelX = self.leftMargin
         self.mainAcctLabelY = self.transDateLabelY + self.fieldHeightConstant + self.rowGapConstant
-        self.mainAcctEntryX = self.mainAcctLabelX + 150
+        self.mainAcctEntryX = self.mainAcctLabelX + self.labelEntryGap
         self.mainAcctEntryY = self.mainAcctLabelY
         self.mainAcctEntryWidth = 100
         
-        self.subAcctLabelX = 5
+        self.subAcctLabelX = self.leftMargin
         self.subAcctLabelY = self.mainAcctLabelY + self.fieldHeightConstant + self.rowGapConstant
-        self.subAcctEntryX = self.subAcctLabelX + 150
+        self.subAcctEntryX = self.subAcctLabelX + self.labelEntryGap
         self.subAcctEntryY = self.subAcctLabelY
         self.subAcctEntryWidth = 100
        
-        self.beaconLabelX = 5
+        self.beaconLabelX = self.leftMargin
         self.beaconLabelY = self.subAcctLabelY + self.fieldHeightConstant + self.rowGapConstant
-        self.beaconEntryX = self.beaconLabelX + 150
+        self.beaconEntryX = self.beaconLabelX + self.labelEntryGap
         self.beaconEntryY = self.beaconLabelY
         self.beaconEntryWidth = 50
+
+        self.amountLabelX = self.leftMargin
+        self.amountLabelY = self.beaconLabelY + self.fieldHeightConstant + self.rowGapConstant
+        self.amountEntryX = self.amountLabelX + self.labelEntryGap
+        self.amountEntryY = self.amountLabelY
+        self.amountEntryWidth = 50
+
+        self.db_crLabelX = self.leftMargin
+        self.db_crLabelY = self.amountLabelY + self.fieldHeightConstant + self.rowGapConstant
+        self.db_crEntryX = self.db_crLabelX + self.labelEntryGap
+        self.db_crEntryY = self.db_crLabelY
+        self.db_crEntryWidth = 50
+
+        self.postToLabelX = self.leftMargin
+        self.postToLabelY = self.db_crLabelY + self.fieldHeightConstant + self.rowGapConstant
+        self.postToEntryX = self.postToLabelX + self.labelEntryGap
+        self.postToEntryY = self.postToLabelY
+        self.postToEntryWidth = 50
+
+        self.statusLabelX = self.leftMargin
+        self.statusLabelY = self.postToLabelY + self.fieldHeightConstant + self.rowGapConstant
+        self.statusEntryX = self.statusLabelX + self.labelEntryGap
+        self.statusEntryY = self.statusLabelY
+        self.statusEntryWidth = 50
+
+        self.remarkLabelX = self.leftMargin
+        self.remarkLabelY = self.statusLabelY + self.fieldHeightConstant + self.rowGapConstant
+        self.remarkEntryX = self.remarkLabelX + self.labelEntryGap
+        self.remarkEntryY = self.remarkLabelY
+        self.remarkEntryWidth = 250
 
         self.setupSjAcctScreen()
 
@@ -415,11 +448,30 @@ class SjAccount():
         self.subAcctLabel = Label(self.sjAcctWidget, text='Sub Acct: ').place(x=self.subAcctLabelX, y=self.subAcctLabelY)
         self.subAcct = Entry(self.sjAcctWidget)
         self.subAcct.place(x=self.subAcctEntryX, y=self.subAcctEntryY, width=self.subAcctEntryWidth, height=self.fieldHeightConstant)
-        #SJ4060624 - beacon field
+        #SJ4060624 - Beacon field
         self.beaconLabel = Label(self.sjAcctWidget, text='Beacon: ').place(x=self.beaconLabelX, y=self.beaconLabelY)
         self.beacon = Entry(self.sjAcctWidget)
         self.beacon.place(x=self.beaconEntryX, y=self.beaconEntryY, width=self.beaconEntryWidth, height=self.fieldHeightConstant)
-
+        #SJ1100624 - Amount field
+        self.amountLabel = Label(self.sjAcctWidget, text='Amount: ').place(x=self.amountLabelX, y=self.amountLabelY)
+        self.amount = Entry(self.sjAcctWidget)
+        self.amount.place(x=self.amountEntryX, y=self.amountEntryY, width=self.amountEntryWidth, height=self.fieldHeightConstant)
+        #SJ1100624 - Debit / Credit field
+        self.db_crLabel = Label(self.sjAcctWidget, text='Debit / Credit: ').place(x=self.db_crLabelX, y=self.db_crLabelY)
+        self.db_cr = Entry(self.sjAcctWidget)
+        self.db_cr.place(x=self.db_crEntryX, y=self.db_crEntryY, width=self.db_crEntryWidth, height=self.fieldHeightConstant)
+        #SJ2110624 - Post To field
+        self.postToLabel = Label(self.sjAcctWidget, text='Post To: ').place(x=self.postToLabelX, y=self.postToLabelY)
+        self.postTo = Entry(self.sjAcctWidget)
+        self.postTo.place(x=self.postToEntryX, y=self.postToEntryY, width=self.postToEntryWidth, height=self.fieldHeightConstant)
+        #SJ2110624 - Status field
+        self.statusLabel = Label(self.sjAcctWidget, text='Status: ').place(x=self.statusLabelX, y=self.statusLabelY)
+        self.status = Entry(self.sjAcctWidget)
+        self.status.place(x=self.statusEntryX, y=self.statusEntryY, width=self.statusEntryWidth, height=self.fieldHeightConstant)
+        #SJ2110624 - Remark field
+        self.remarkLabel = Label(self.sjAcctWidget, text='Remark: ').place(x=self.remarkLabelX, y=self.remarkLabelY)
+        self.remark = Entry(self.sjAcctWidget)
+        self.remark.place(x=self.remarkEntryX, y=self.remarkEntryY, width=self.remarkEntryWidth, height=self.fieldHeightConstant)
 
     def __del__(self):
         print('Destructor for SjAccount class')
