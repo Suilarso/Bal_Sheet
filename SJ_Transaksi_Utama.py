@@ -353,7 +353,7 @@ class BankAccount():
 #SJ1270523 - This class setup GUI for daily transaction entry screen.
 #SJ1270524 - The data keyed in the entry screen are to be saved in sjAcct table
 class SjAccount():
-    def __init__(self, mainWidget, sjAcctDB):
+    def __init__(self, mainWidget, mainAcctDB, subAcctDB, sjAcctDB):
         self.sjAcctWidget = mainWidget
         self.sjAcctWidget.geometry("750x500")
         self.sjAcctDB = sjAcctDB
@@ -429,7 +429,13 @@ class SjAccount():
         self.remarkEntryY = self.remarkLabelY
         self.remarkEntryWidth = 250
 
+        self.setupDropdownList()
         self.setupSjAcctScreen()
+
+    def setupDropdownList(self):
+        """This method create all dropdown lists (Main Acct, Sub Acct, Beacon, and Post to) needed in the GUI"""
+        mainAcctDB.readAllRecords("mainAcct")
+        pass
 
     def setupSjAcctScreen(self):
         """This method is used to setup data entry screen for SJ Account. It contains nine fields: Date, Main Acct, Sub-acct, beacon, 
@@ -501,6 +507,19 @@ class SetupSQLConnection():
     def getSQLCursor(self):
         return self.tableCursor
 
+    def readAllRecords(self, field):
+        #c.execute('SELECT * FROM big_table')
+        #for row in c:
+            # do_stuff_with_row
+        sql = "SELECT "+field+" FROM "+self.tableName
+        self.tableCursor.execute(sql)
+        #temp[m[0] for m in M]
+        retList = [row[0] for row in self.tableCursor]
+        print('retList: {0}'.format(retList))
+        #for row in self.tableCursor:
+        #    print('row type: {0}, Row {1}'.format(type(row), row))
+
+
     def readRecord(self, field, token):
     #SJ3130422 - Here we check for duplicate workOrder
 
@@ -561,5 +580,5 @@ bankAcctDB = SetupSQLConnection('./dbase/financialDB.sqlite', 'bankAcct', ['bank
 #app = BankAccount(bankAcctWindow, bankAcctDB)
 
 sjAcctDB = SetupSQLConnection('./dbase/financialDB.sqlite', 'sjAcct', ['date', 'mainAcct', 'subAcct', 'beacon', 'amount', 'db_cr', 'post_to', 'status', 'remark'])
-app = SjAccount(mainWindow, sjAcctDB)
+app = SjAccount(mainWindow, mainAcctDB, subAcctDB, sjAcctDB)
 mainloop()  #SJ5310323 - Creating long-running event loop
