@@ -359,7 +359,10 @@ class SjAccount():
         self.sjAcctDB = sjAcctDB
         self.transDate = datetime(1,1,1).now()  #SJ1270524 - Getting today system date
         self.date = ''
-        self.mainAcct = ''
+        #self.mainAcct = ''
+        #self.mainAcctListbox = ''
+        self.mainAcctOption = ''
+        self.mainAcctDropdown = ''
         self.subAcct = ''
         self.beacon = ''
         self.amount = 0.0
@@ -448,9 +451,28 @@ class SjAccount():
         self.date.place(x=self.transDateEntryX, y=self.transDateEntryY, width = self.transDateEntryWidth, height = self.fieldHeightConstant)
         #SJ2280524 - Main Account field
         self.mainAcctLabel = Label(self.sjAcctWidget, text='Main Acct: ').place(x=self.mainAcctLabelX, y=self.mainAcctLabelY)
-        self.mainAcct = Entry(self.sjAcctWidget)
-        self.mainAcct.place(x=self.mainAcctEntryX, y=self.mainAcctEntryY, width=self.mainAcctEntryWidth, height=self.fieldHeightConstant)
-        #SJ4060624 - Sub Account field 
+        #self.mainAcct = Entry(self.sjAcctWidget)
+        #self.mainAcct.place(x=self.mainAcctEntryX, y=self.mainAcctEntryY, width=self.mainAcctEntryWidth, height=self.fieldHeightConstant)
+        tempmainAcctListbox = mainAcctDB.readAllRecords("mainAcct")
+        #self.mainAcctListbox = Listbox(self.sjAcctWidget, selectmode=MULTIPLE, exportselection=0)        
+        #for mainAcct in tempmainAcctListbox:
+        #    self.mainAcctListbox.insert(END, mainAcct)
+        #self.mainAcctListbox.place(x=self.mainAcctEntryX, y=self.mainAcctEntryY, width=self.mainAcctEntryWidth, height=self.fieldHeightConstant)
+        self.mainAcctOption = StringVar(self.sjAcctWidget)
+        self.mainAcctOption.set(tempmainAcctListbox[0])
+        self.mainAcctDropdown = OptionMenu(self.sjAcctWidget, self.mainAcctOption, *tempmainAcctListbox)
+        self.mainAcctDropdown.configure(width=16, height=1)
+        self.mainAcctDropdown.place(x=self.mainAcctEntryX, y=self.mainAcctEntryY, width=self.mainAcctEntryWidth, height=self.fieldHeightConstant)
+
+        #SJ6120222 - Input field for Received by
+        #self.receivedByLabel = Label(master, text='Received by: ').grid(row=RECEIVED_BY_LABEL_ROW, column=RECEIVED_BY_LABEL_COL)
+        #usersOption = StringVar(master)
+        #usersOption.set(usersName[0])
+        #usersDropdown = OptionMenu(master, usersOption, *usersName)
+        #usersDropdown.configure(width=16, height=1)
+        #usersDropdown.grid(row=RECEIVED_BY_ENTRY_ROW, column=RECEIVED_BY_ENTRY_COL)
+
+        #SJ4060624 - Sub Account field
         self.subAcctLabel = Label(self.sjAcctWidget, text='Sub Acct: ').place(x=self.subAcctLabelX, y=self.subAcctLabelY)
         self.subAcct = Entry(self.sjAcctWidget)
         self.subAcct.place(x=self.subAcctEntryX, y=self.subAcctEntryY, width=self.subAcctEntryWidth, height=self.fieldHeightConstant)
@@ -508,17 +530,11 @@ class SetupSQLConnection():
         return self.tableCursor
 
     def readAllRecords(self, field):
-        #c.execute('SELECT * FROM big_table')
-        #for row in c:
-            # do_stuff_with_row
         sql = "SELECT "+field+" FROM "+self.tableName
         self.tableCursor.execute(sql)
-        #temp[m[0] for m in M]
         retList = [row[0] for row in self.tableCursor]
-        print('retList: {0}'.format(retList))
-        #for row in self.tableCursor:
-        #    print('row type: {0}, Row {1}'.format(type(row), row))
-
+        return retList
+        #print('retList: {0}'.format(retList))
 
     def readRecord(self, field, token):
     #SJ3130422 - Here we check for duplicate workOrder
