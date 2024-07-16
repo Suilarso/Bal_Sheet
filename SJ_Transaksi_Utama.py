@@ -359,8 +359,6 @@ class SjAccount():
         self.sjAcctDB = sjAcctDB
         self.transDate = datetime(1,1,1).now()  #SJ1270524 - Getting today system date
         self.date = ''
-        #self.mainAcct = ''
-        #self.mainAcctListbox = ''
         self.mainAcctOption = ''
         self.mainAcctDropdown = ''
         self.subAcct = ''
@@ -451,31 +449,21 @@ class SjAccount():
         self.date.place(x=self.transDateEntryX, y=self.transDateEntryY, width = self.transDateEntryWidth, height = self.fieldHeightConstant)
         #SJ2280524 - Main Account field
         self.mainAcctLabel = Label(self.sjAcctWidget, text='Main Acct: ').place(x=self.mainAcctLabelX, y=self.mainAcctLabelY)
-        #self.mainAcct = Entry(self.sjAcctWidget)
-        #self.mainAcct.place(x=self.mainAcctEntryX, y=self.mainAcctEntryY, width=self.mainAcctEntryWidth, height=self.fieldHeightConstant)
-        tempmainAcctListbox = mainAcctDB.readAllRecords("mainAcct")
-        #self.mainAcctListbox = Listbox(self.sjAcctWidget, selectmode=MULTIPLE, exportselection=0)        
-        #for mainAcct in tempmainAcctListbox:
-        #    self.mainAcctListbox.insert(END, mainAcct)
-        #self.mainAcctListbox.place(x=self.mainAcctEntryX, y=self.mainAcctEntryY, width=self.mainAcctEntryWidth, height=self.fieldHeightConstant)
+        tempMainAcctOption = mainAcctDB.readAllRecords("mainAcct")
         self.mainAcctOption = StringVar(self.sjAcctWidget)
-        self.mainAcctOption.set(tempmainAcctListbox[0])
-        self.mainAcctDropdown = OptionMenu(self.sjAcctWidget, self.mainAcctOption, *tempmainAcctListbox)
-        self.mainAcctDropdown.configure(width=16, height=1)
-        self.mainAcctDropdown.place(x=self.mainAcctEntryX, y=self.mainAcctEntryY, width=self.mainAcctEntryWidth, height=self.fieldHeightConstant)
-
-        #SJ6120222 - Input field for Received by
-        #self.receivedByLabel = Label(master, text='Received by: ').grid(row=RECEIVED_BY_LABEL_ROW, column=RECEIVED_BY_LABEL_COL)
-        #usersOption = StringVar(master)
-        #usersOption.set(usersName[0])
-        #usersDropdown = OptionMenu(master, usersOption, *usersName)
-        #usersDropdown.configure(width=16, height=1)
-        #usersDropdown.grid(row=RECEIVED_BY_ENTRY_ROW, column=RECEIVED_BY_ENTRY_COL)
-
+        self.mainAcctOption.set(tempMainAcctOption[0])
+        self.mainAcctDropdown = OptionMenu(self.sjAcctWidget, self.mainAcctOption, *tempMainAcctOption)
+        #self.mainAcctDropdown.configure(width=16, height=5)
+        self.mainAcctDropdown.place(x=self.mainAcctEntryX, y=self.mainAcctEntryY, width=self.mainAcctEntryWidth, height=self.fieldHeightConstant+3)
         #SJ4060624 - Sub Account field
         self.subAcctLabel = Label(self.sjAcctWidget, text='Sub Acct: ').place(x=self.subAcctLabelX, y=self.subAcctLabelY)
+        tempSubAcctOption = subAcctDB.readAllRecords("subAcct")
+        self.subAcctOption = StringVar(self.sjAcctWidget)
         self.subAcct = Entry(self.sjAcctWidget)
-        self.subAcct.place(x=self.subAcctEntryX, y=self.subAcctEntryY, width=self.subAcctEntryWidth, height=self.fieldHeightConstant)
+        self.subAcctOption.set(tempSubAcctOption[0])
+        self.subAcctDropdown = OptionMenu(self.sjAcctWidget, self.subAcctOption, *tempSubAcctOption)
+        self.subAcctDropdown.place(x=self.subAcctEntryX, y=self.subAcctEntryY, width=self.subAcctEntryWidth, height=self.fieldHeightConstant+3)
+
         #SJ4060624 - Beacon field
         self.beaconLabel = Label(self.sjAcctWidget, text='Beacon: ').place(x=self.beaconLabelX, y=self.beaconLabelY)
         self.beacon = Entry(self.sjAcctWidget)
@@ -500,6 +488,15 @@ class SjAccount():
         self.remarkLabel = Label(self.sjAcctWidget, text='Remark: ').place(x=self.remarkLabelX, y=self.remarkLabelY)
         self.remark = Entry(self.sjAcctWidget)
         self.remark.place(x=self.remarkEntryX, y=self.remarkEntryY, width=self.remarkEntryWidth, height=self.fieldHeightConstant)
+
+        #SJ6120222 - Input field for Received by
+        #self.receivedByLabel = Label(master, text='Received by: ').grid(row=RECEIVED_BY_LABEL_ROW, column=RECEIVED_BY_LABEL_COL)
+        #usersOption = StringVar(master)
+        #usersOption.set(usersName[0])
+        #usersDropdown = OptionMenu(master, usersOption, *usersName)
+        #usersDropdown.configure(width=16, height=1)
+        #usersDropdown.grid(row=RECEIVED_BY_ENTRY_ROW, column=RECEIVED_BY_ENTRY_COL)
+
 
     def __del__(self):
         print('Destructor for SjAccount class')
