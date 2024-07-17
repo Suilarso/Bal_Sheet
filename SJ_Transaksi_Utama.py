@@ -353,7 +353,7 @@ class BankAccount():
 #SJ1270523 - This class setup GUI for daily transaction entry screen.
 #SJ1270524 - The data keyed in the entry screen are to be saved in sjAcct table
 class SjAccount():
-    def __init__(self, mainWidget, mainAcctDB, subAcctDB, sjAcctDB):
+    def __init__(self, mainWidget, mainAcctDB, subAcctDB, bankAcctDB, sjAcctDB):
         self.sjAcctWidget = mainWidget
         self.sjAcctWidget.geometry("750x500")
         self.sjAcctDB = sjAcctDB
@@ -361,11 +361,17 @@ class SjAccount():
         self.date = ''
         self.mainAcctOption = ''
         self.mainAcctDropdown = ''
-        self.subAcct = ''
-        self.beacon = ''
+        self.subAcctOption = ''
+        self.subAcctDropdown = ''
+        self.beaconOptionList = ["Needs", "Wants", "Saving"]
+        self.beaconOption = ''
+        self.beaconOptionDropdown = ''
         self.amount = 0.0
-        self.db_cr = ''
-        self.postTo = ''
+        self.db_crOptionList = ["Debit", "Credit"]
+        self.db_crOption = ''
+        self.db_crOptionDropdown = ''
+        self.postToOption = ''
+        self.postToOptionDropdown = ''
         self.status = ''
         self.remark = ''
 
@@ -398,7 +404,7 @@ class SjAccount():
         self.beaconLabelY = self.subAcctLabelY + self.fieldHeightConstant + self.rowGapConstant
         self.beaconEntryX = self.beaconLabelX + self.labelEntryGap
         self.beaconEntryY = self.beaconLabelY
-        self.beaconEntryWidth = 50
+        self.beaconEntryWidth = 80
 
         self.amountLabelX = self.leftMargin
         self.amountLabelY = self.beaconLabelY + self.fieldHeightConstant + self.rowGapConstant
@@ -410,13 +416,13 @@ class SjAccount():
         self.db_crLabelY = self.amountLabelY + self.fieldHeightConstant + self.rowGapConstant
         self.db_crEntryX = self.db_crLabelX + self.labelEntryGap
         self.db_crEntryY = self.db_crLabelY
-        self.db_crEntryWidth = 50
+        self.db_crEntryWidth = 80
 
         self.postToLabelX = self.leftMargin
         self.postToLabelY = self.db_crLabelY + self.fieldHeightConstant + self.rowGapConstant
         self.postToEntryX = self.postToLabelX + self.labelEntryGap
         self.postToEntryY = self.postToLabelY
-        self.postToEntryWidth = 50
+        self.postToEntryWidth = 100
 
         self.statusLabelX = self.leftMargin
         self.statusLabelY = self.postToLabelY + self.fieldHeightConstant + self.rowGapConstant
@@ -430,7 +436,7 @@ class SjAccount():
         self.remarkEntryY = self.remarkLabelY
         self.remarkEntryWidth = 250
 
-        self.setupDropdownList()
+        #self.setupDropdownList()
         self.setupSjAcctScreen()
 
     def setupDropdownList(self):
@@ -447,43 +453,56 @@ class SjAccount():
         self.transDateLabel = Label(self.sjAcctWidget, text='Transaction Date: ').place(x=self.transDateLabelX, y=self.transDateLabelY)
         self.date = DateEntry(self.sjAcctWidget, values="Text", year=self.transDate.year, state="readonly", date_pattern="yyyy-mm-dd")
         self.date.place(x=self.transDateEntryX, y=self.transDateEntryY, width = self.transDateEntryWidth, height = self.fieldHeightConstant)
+        
         #SJ2280524 - Main Account field
         self.mainAcctLabel = Label(self.sjAcctWidget, text='Main Acct: ').place(x=self.mainAcctLabelX, y=self.mainAcctLabelY)
         tempMainAcctOption = mainAcctDB.readAllRecords("mainAcct")
         self.mainAcctOption = StringVar(self.sjAcctWidget)
         self.mainAcctOption.set(tempMainAcctOption[0])
         self.mainAcctDropdown = OptionMenu(self.sjAcctWidget, self.mainAcctOption, *tempMainAcctOption)
-        #self.mainAcctDropdown.configure(width=16, height=5)
         self.mainAcctDropdown.place(x=self.mainAcctEntryX, y=self.mainAcctEntryY, width=self.mainAcctEntryWidth, height=self.fieldHeightConstant+3)
+        
         #SJ4060624 - Sub Account field
         self.subAcctLabel = Label(self.sjAcctWidget, text='Sub Acct: ').place(x=self.subAcctLabelX, y=self.subAcctLabelY)
         tempSubAcctOption = subAcctDB.readAllRecords("subAcct")
         self.subAcctOption = StringVar(self.sjAcctWidget)
-        self.subAcct = Entry(self.sjAcctWidget)
         self.subAcctOption.set(tempSubAcctOption[0])
         self.subAcctDropdown = OptionMenu(self.sjAcctWidget, self.subAcctOption, *tempSubAcctOption)
         self.subAcctDropdown.place(x=self.subAcctEntryX, y=self.subAcctEntryY, width=self.subAcctEntryWidth, height=self.fieldHeightConstant+3)
-
+        
         #SJ4060624 - Beacon field
         self.beaconLabel = Label(self.sjAcctWidget, text='Beacon: ').place(x=self.beaconLabelX, y=self.beaconLabelY)
-        self.beacon = Entry(self.sjAcctWidget)
-        self.beacon.place(x=self.beaconEntryX, y=self.beaconEntryY, width=self.beaconEntryWidth, height=self.fieldHeightConstant)
+        self.beaconOption = StringVar(self.sjAcctWidget)
+        self.beaconOption.set(self.beaconOptionList[0])
+        self.beaconOptionDropdown = OptionMenu(self.sjAcctWidget, self.beaconOption, *self.beaconOptionList)
+        self.beaconOptionDropdown.place(x=self.beaconEntryX, y=self.beaconEntryY, width=self.beaconEntryWidth, height=self.fieldHeightConstant+3)
+        
         #SJ1100624 - Amount field
+        #SJ2160724 - This input field needs to be validated for input that is convertible to int or float 
         self.amountLabel = Label(self.sjAcctWidget, text='Amount: ').place(x=self.amountLabelX, y=self.amountLabelY)
         self.amount = Entry(self.sjAcctWidget)
         self.amount.place(x=self.amountEntryX, y=self.amountEntryY, width=self.amountEntryWidth, height=self.fieldHeightConstant)
+        
         #SJ1100624 - Debit / Credit field
         self.db_crLabel = Label(self.sjAcctWidget, text='Debit / Credit: ').place(x=self.db_crLabelX, y=self.db_crLabelY)
-        self.db_cr = Entry(self.sjAcctWidget)
-        self.db_cr.place(x=self.db_crEntryX, y=self.db_crEntryY, width=self.db_crEntryWidth, height=self.fieldHeightConstant)
+        self.db_crOption = StringVar(self.sjAcctWidget)
+        self.db_crOption.set(self.db_crOptionList[0])
+        self.db_crOptionDropdown = OptionMenu(self.sjAcctWidget, self.db_crOption, *self.db_crOptionList)
+        self.db_crOptionDropdown.place(x=self.db_crEntryX, y=self.db_crEntryY, width=self.db_crEntryWidth, height=self.fieldHeightConstant+3)
+        
         #SJ2110624 - Post To field
         self.postToLabel = Label(self.sjAcctWidget, text='Post To: ').place(x=self.postToLabelX, y=self.postToLabelY)
-        self.postTo = Entry(self.sjAcctWidget)
-        self.postTo.place(x=self.postToEntryX, y=self.postToEntryY, width=self.postToEntryWidth, height=self.fieldHeightConstant)
+        tempPostToOption = bankAcctDB.readAllRecords("bankCode")
+        self.postToOption = StringVar(self.sjAcctWidget)
+        self.postToOption.set(tempPostToOption[0])
+        self.postToOptionDropdown = OptionMenu(self.sjAcctWidget, self.postToOption, *tempPostToOption)
+        self.postToOptionDropdown.place(x=self.postToEntryX, y=self.postToEntryY, width=self.postToEntryWidth, height=self.fieldHeightConstant+3)
+        
         #SJ2110624 - Status field
         self.statusLabel = Label(self.sjAcctWidget, text='Status: ').place(x=self.statusLabelX, y=self.statusLabelY)
         self.status = Entry(self.sjAcctWidget)
         self.status.place(x=self.statusEntryX, y=self.statusEntryY, width=self.statusEntryWidth, height=self.fieldHeightConstant)
+        
         #SJ2110624 - Remark field
         self.remarkLabel = Label(self.sjAcctWidget, text='Remark: ').place(x=self.remarkLabelX, y=self.remarkLabelY)
         self.remark = Entry(self.sjAcctWidget)
@@ -593,5 +612,5 @@ bankAcctDB = SetupSQLConnection('./dbase/financialDB.sqlite', 'bankAcct', ['bank
 #app = BankAccount(bankAcctWindow, bankAcctDB)
 
 sjAcctDB = SetupSQLConnection('./dbase/financialDB.sqlite', 'sjAcct', ['date', 'mainAcct', 'subAcct', 'beacon', 'amount', 'db_cr', 'post_to', 'status', 'remark'])
-app = SjAccount(mainWindow, mainAcctDB, subAcctDB, sjAcctDB)
+app = SjAccount(mainWindow, mainAcctDB, subAcctDB, bankAcctDB, sjAcctDB)
 mainloop()  #SJ5310323 - Creating long-running event loop
