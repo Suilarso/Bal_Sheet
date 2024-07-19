@@ -359,17 +359,20 @@ class SjAccount():
         self.sjAcctDB = sjAcctDB
         self.transDate = datetime(1,1,1).now()  #SJ1270524 - Getting today system date
         self.date = ''
+        self.mainAcctOptionList = ''
         self.mainAcctOption = ''
         self.mainAcctDropdown = ''
+        self.subAcctOptionList = ''
         self.subAcctOption = ''
         self.subAcctDropdown = ''
-        self.beaconOptionList = ["Needs", "Wants", "Saving"]
+        self.beaconOptionList = ''
         self.beaconOption = ''
         self.beaconOptionDropdown = ''
         self.amount = 0.0
-        self.db_crOptionList = ["Debit", "Credit"]
+        self.db_crOptionList = ''
         self.db_crOption = ''
         self.db_crOptionDropdown = ''
+        self.postToOptionList = ''
         self.postToOption = ''
         self.postToOptionDropdown = ''
         self.status = ''
@@ -436,13 +439,16 @@ class SjAccount():
         self.remarkEntryY = self.remarkLabelY
         self.remarkEntryWidth = 250
 
-        #self.setupDropdownList()
+        self.setupDropdownList()
         self.setupSjAcctScreen()
 
     def setupDropdownList(self):
         """This method create all dropdown lists (Main Acct, Sub Acct, Beacon, and Post to) needed in the GUI"""
-        mainAcctDB.readAllRecords("mainAcct")
-        pass
+        self.mainAcctOptionList = mainAcctDB.readAllRecords("mainAcct")
+        self.subAcctOptionList = subAcctDB.readAllRecords("subAcct")
+        self.beaconOptionList = ["Needs", "Wants", "Saving"]
+        self.db_crOptionList = ["Debit", "Credit"]
+        self.postToOptionList = bankAcctDB.readAllRecords("bankCode")
 
     def setupSjAcctScreen(self):
         """This method is used to setup data entry screen for SJ Account. It contains nine fields: Date, Main Acct, Sub-acct, beacon, 
@@ -456,18 +462,16 @@ class SjAccount():
         
         #SJ2280524 - Main Account field
         self.mainAcctLabel = Label(self.sjAcctWidget, text='Main Acct: ').place(x=self.mainAcctLabelX, y=self.mainAcctLabelY)
-        tempMainAcctOption = mainAcctDB.readAllRecords("mainAcct")
         self.mainAcctOption = StringVar(self.sjAcctWidget)
-        self.mainAcctOption.set(tempMainAcctOption[0])
-        self.mainAcctDropdown = OptionMenu(self.sjAcctWidget, self.mainAcctOption, *tempMainAcctOption)
+        self.mainAcctOption.set(self.mainAcctOptionList[0])
+        self.mainAcctDropdown = OptionMenu(self.sjAcctWidget, self.mainAcctOption, *self.mainAcctOptionList)
         self.mainAcctDropdown.place(x=self.mainAcctEntryX, y=self.mainAcctEntryY, width=self.mainAcctEntryWidth, height=self.fieldHeightConstant+3)
         
         #SJ4060624 - Sub Account field
         self.subAcctLabel = Label(self.sjAcctWidget, text='Sub Acct: ').place(x=self.subAcctLabelX, y=self.subAcctLabelY)
-        tempSubAcctOption = subAcctDB.readAllRecords("subAcct")
         self.subAcctOption = StringVar(self.sjAcctWidget)
-        self.subAcctOption.set(tempSubAcctOption[0])
-        self.subAcctDropdown = OptionMenu(self.sjAcctWidget, self.subAcctOption, *tempSubAcctOption)
+        self.subAcctOption.set(self.subAcctOptionList[0])
+        self.subAcctDropdown = OptionMenu(self.sjAcctWidget, self.subAcctOption, *self.subAcctOptionList)
         self.subAcctDropdown.place(x=self.subAcctEntryX, y=self.subAcctEntryY, width=self.subAcctEntryWidth, height=self.fieldHeightConstant+3)
         
         #SJ4060624 - Beacon field
@@ -492,10 +496,9 @@ class SjAccount():
         
         #SJ2110624 - Post To field
         self.postToLabel = Label(self.sjAcctWidget, text='Post To: ').place(x=self.postToLabelX, y=self.postToLabelY)
-        tempPostToOption = bankAcctDB.readAllRecords("bankCode")
         self.postToOption = StringVar(self.sjAcctWidget)
-        self.postToOption.set(tempPostToOption[0])
-        self.postToOptionDropdown = OptionMenu(self.sjAcctWidget, self.postToOption, *tempPostToOption)
+        self.postToOption.set(self.postToOptionList[0])
+        self.postToOptionDropdown = OptionMenu(self.sjAcctWidget, self.postToOption, *self.postToOptionList)
         self.postToOptionDropdown.place(x=self.postToEntryX, y=self.postToEntryY, width=self.postToEntryWidth, height=self.fieldHeightConstant+3)
         
         #SJ2110624 - Status field
@@ -507,15 +510,6 @@ class SjAccount():
         self.remarkLabel = Label(self.sjAcctWidget, text='Remark: ').place(x=self.remarkLabelX, y=self.remarkLabelY)
         self.remark = Entry(self.sjAcctWidget)
         self.remark.place(x=self.remarkEntryX, y=self.remarkEntryY, width=self.remarkEntryWidth, height=self.fieldHeightConstant)
-
-        #SJ6120222 - Input field for Received by
-        #self.receivedByLabel = Label(master, text='Received by: ').grid(row=RECEIVED_BY_LABEL_ROW, column=RECEIVED_BY_LABEL_COL)
-        #usersOption = StringVar(master)
-        #usersOption.set(usersName[0])
-        #usersDropdown = OptionMenu(master, usersOption, *usersName)
-        #usersDropdown.configure(width=16, height=1)
-        #usersDropdown.grid(row=RECEIVED_BY_ENTRY_ROW, column=RECEIVED_BY_ENTRY_COL)
-
 
     def __del__(self):
         print('Destructor for SjAccount class')
