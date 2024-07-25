@@ -383,7 +383,7 @@ class SjAccount():
         self.topMargin = 5
         self.rowGapConstant = 10
         self.fieldHeightConstant = 22
-        self.labelEntryGap = 150
+        self.labelEntryGap = 125
         
         self.transDateLabelX = self.leftMargin
         self.transDateLabelY = self.topMargin
@@ -438,6 +438,13 @@ class SjAccount():
         self.remarkEntryX = self.remarkLabelX + self.labelEntryGap
         self.remarkEntryY = self.remarkLabelY
         self.remarkEntryWidth = 250
+
+        self.cancelButtonX = self.leftMargin + 60
+        self.cancelButtonY = self.remarkLabelY + self.fieldHeightConstant + self.rowGapConstant + self.rowGapConstant
+        self.cancelButtonWidth = 60
+        self.saveButtonX = self.cancelButtonX + 150
+        self.saveButtonY = self.remarkLabelY + self.fieldHeightConstant + self.rowGapConstant + self.rowGapConstant
+        self.saveButtonWidth = 50
 
         self.setupDropdownList()
         self.setupSjAcctScreen()
@@ -510,6 +517,18 @@ class SjAccount():
         self.remarkLabel = Label(self.sjAcctWidget, text='Remark: ').place(x=self.remarkLabelX, y=self.remarkLabelY)
         self.remark = Entry(self.sjAcctWidget)
         self.remark.place(x=self.remarkEntryX, y=self.remarkEntryY, width=self.remarkEntryWidth, height=self.fieldHeightConstant)
+
+        #SJ3240724 - Cancel and Save button
+        self.cancelButton = Button(text='Cancel', command=lambda x=self.sjAcctWidget: self.cancelButtonCallback(x))
+        self.cancelButton.place(x=self.cancelButtonX, y=self.cancelButtonY, width=self.cancelButtonWidth, height=self.fieldHeightConstant)
+        self.saveButton = Button(text='Save', command=lambda x=self.sjAcctWidget: self.saveButtonCallback(x))
+        self.saveButton.place(x=self.saveButtonX, y=self.saveButtonY, width=self.saveButtonWidth, height=self.fieldHeightConstant)
+
+    def cancelButtonCallback(self, mainWidget):
+        pass
+
+    def saveButtonCallback(self, mainWidget):
+        pass
 
     def __del__(self):
         print('Destructor for SjAccount class')
