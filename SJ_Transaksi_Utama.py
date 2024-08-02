@@ -449,6 +449,9 @@ class SjAccount():
         self.setupDropdownList()
         self.setupSjAcctScreen()
 
+    def __str__(self):
+        print("SjAccount object being instantiated")
+
     def setupDropdownList(self):
         """This method create all dropdown lists (Main Acct, Sub Acct, Beacon, and Post to) needed in the GUI"""
         self.mainAcctOptionList = mainAcctDB.readAllRecords("mainAcct")
@@ -519,15 +522,28 @@ class SjAccount():
         self.remark.place(x=self.remarkEntryX, y=self.remarkEntryY, width=self.remarkEntryWidth, height=self.fieldHeightConstant)
 
         #SJ3240724 - Cancel and Save button
-        self.cancelButton = Button(text='Cancel', command=lambda x=self.sjAcctWidget: self.cancelButtonCallback(x))
+        #self.cancelButton = Button(text='Cancel', command=lambda x=self.sjAcctWidget: self.cancelButtonCallback(x))
+        self.cancelButton = Button(self.sjAcctWidget, text="Cancel", command = self.cancelButtonCallback)
         self.cancelButton.place(x=self.cancelButtonX, y=self.cancelButtonY, width=self.cancelButtonWidth, height=self.fieldHeightConstant)
-        self.saveButton = Button(text='Save', command=lambda x=self.sjAcctWidget: self.saveButtonCallback(x))
+        #self.saveButton = Button(text='Save', command=lambda x=self.sjAcctWidget: self.saveButtonCallback(x))
+        self.saveButton = Button(self.sjAcctWidget, text="Save", command = self.saveButtonCallback)
         self.saveButton.place(x=self.saveButtonX, y=self.saveButtonY, width=self.saveButtonWidth, height=self.fieldHeightConstant)
 
-    def cancelButtonCallback(self, mainWidget):
+    def cancelButtonCallback(self):
         pass
 
-    def saveButtonCallback(self, mainWidget):
+    def saveButtonCallback(self):
+        #SJ1290724 - Sebelum data yg tercantum di gui layar di saved ke sjAcctDb, data dari amount field perlu di check validity nya
+        print("transDate: {0}, mainAcctOption: {1}, subAcctOption: {2}, beaconOption: {3}".format(self.date.get_date(), self.mainAcctOption.get(), self.subAcctOption.get(), self.beaconOption.get()))
+        print("amount: {0}, db_crOption: {1}, postToOption: {2}, status: {3}, remark: {4}".format(eval(self.amount.get()), self.db_crOption.get(), self.postToOption.get(), self.status.get(), self.remark.get()))
+    
+ #curCursor.execute('''INSERT INTO werChecklist (customerName, workOrder, dateReceived, receivedBy, numOfPieces,
+ #                              ofPieces, pictureStatus, photoesStatus, productsTypeListbox, numberOfPartsListbox, partsInBlueBin,
+ #                              notes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)''', (self.customerName, self.workOrder, dateReceived.get_date(),
+ #                              usersOption.get(), eval(numOfPieces.get()), eval(ofPieces.get()), pictureStatus.get(), photoesStatus.get(),
+ #                              str(productsTypeListbox.curselection()), str(numberOfPartsListbox.curselection()),
+ #                              partsInBlueBin.get(), notes.get(1.0, END)))
+
         pass
 
     def __del__(self):
