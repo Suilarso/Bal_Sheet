@@ -529,13 +529,32 @@ class SjAccount():
         self.saveButton = Button(self.sjAcctWidget, text="Save", command = self.saveButtonCallback)
         self.saveButton.place(x=self.saveButtonX, y=self.saveButtonY, width=self.saveButtonWidth, height=self.fieldHeightConstant)
 
+    def verifySjAcctData(self):
+        #SJ2060824 - Kita check apa data yg di isi di kotak amount valid sebagai float value
+        tempAmount = self.amount.get().strip()
+        retFlag = True
+        try:
+            #SJ2060824 - Uji coba ganti data ke integer
+            amount = int(tempAmount)
+        except ValueError:
+            try:
+                #SJ2060824 Uji coba ganti data ke float
+                amount = float(tempAmount)
+            except ValueError:
+                showerror(title="Invalid data", message="Data must be integer or float.")
+                retFlag = False
+
+        return retFlag
+
     def cancelButtonCallback(self):
         pass
 
     def saveButtonCallback(self):
         #SJ1290724 - Sebelum data yg tercantum di gui layar di saved ke sjAcctDb, data dari amount field perlu di check validity nya
-        print("transDate: {0}, mainAcctOption: {1}, subAcctOption: {2}, beaconOption: {3}".format(self.date.get_date(), self.mainAcctOption.get(), self.subAcctOption.get(), self.beaconOption.get()))
-        print("amount: {0}, db_crOption: {1}, postToOption: {2}, status: {3}, remark: {4}".format(eval(self.amount.get()), self.db_crOption.get(), self.postToOption.get(), self.status.get(), self.remark.get()))
+        
+        if (self.verifySjAcctData()):
+            print("transDate: {0}, mainAcctOption: {1}, subAcctOption: {2}, beaconOption: {3}".format(self.date.get_date(), self.mainAcctOption.get(), self.subAcctOption.get(), self.beaconOption.get()))
+            print("amount: {0}, db_crOption: {1}, postToOption: {2}, status: {3}, remark: {4}".format(eval(self.amount.get()), self.db_crOption.get(), self.postToOption.get(), self.status.get(), self.remark.get()))
     
  #curCursor.execute('''INSERT INTO werChecklist (customerName, workOrder, dateReceived, receivedBy, numOfPieces,
  #                              ofPieces, pictureStatus, photoesStatus, productsTypeListbox, numberOfPartsListbox, partsInBlueBin,
@@ -543,8 +562,6 @@ class SjAccount():
  #                              usersOption.get(), eval(numOfPieces.get()), eval(ofPieces.get()), pictureStatus.get(), photoesStatus.get(),
  #                              str(productsTypeListbox.curselection()), str(numberOfPartsListbox.curselection()),
  #                              partsInBlueBin.get(), notes.get(1.0, END)))
-
-        pass
 
     def __del__(self):
         print('Destructor for SjAccount class')
