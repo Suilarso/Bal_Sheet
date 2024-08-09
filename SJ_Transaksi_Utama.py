@@ -449,9 +449,6 @@ class SjAccount():
         self.setupDropdownList()
         self.setupSjAcctScreen()
 
-    def __str__(self):
-        print("SjAccount object being instantiated")
-
     def setupDropdownList(self):
         """This method create all dropdown lists (Main Acct, Sub Acct, Beacon, and Post to) needed in the GUI"""
         self.mainAcctOptionList = mainAcctDB.readAllRecords("mainAcct")
@@ -532,7 +529,7 @@ class SjAccount():
     def verifySjAcctData(self):
         #SJ2060824 - Kita check apa data yg di isi di kotak amount valid sebagai float value
         tempAmount = self.amount.get().strip()
-        retFlag = True
+        retValue = True
         try:
             #SJ2060824 - Uji coba ganti data ke integer
             amount = int(tempAmount)
@@ -542,9 +539,9 @@ class SjAccount():
                 amount = float(tempAmount)
             except ValueError:
                 showerror(title="Invalid data", message="Data must be integer or float.")
-                retFlag = False
+                retValue = False
 
-        return retFlag
+        return retValue
 
     def cancelButtonCallback(self):
         pass
@@ -553,16 +550,12 @@ class SjAccount():
         #SJ1290724 - Sebelum data yg tercantum di gui layar di saved ke sjAcctDb, data dari amount field perlu di check validity nya
         
         if (self.verifySjAcctData()):
-            print("transDate: {0}, mainAcctOption: {1}, subAcctOption: {2}, beaconOption: {3}".format(self.date.get_date(), self.mainAcctOption.get(), self.subAcctOption.get(), self.beaconOption.get()))
-            print("amount: {0}, db_crOption: {1}, postToOption: {2}, status: {3}, remark: {4}".format(eval(self.amount.get()), self.db_crOption.get(), self.postToOption.get(), self.status.get(), self.remark.get()))
-    
- #curCursor.execute('''INSERT INTO werChecklist (customerName, workOrder, dateReceived, receivedBy, numOfPieces,
- #                              ofPieces, pictureStatus, photoesStatus, productsTypeListbox, numberOfPartsListbox, partsInBlueBin,
- #                              notes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)''', (self.customerName, self.workOrder, dateReceived.get_date(),
- #                              usersOption.get(), eval(numOfPieces.get()), eval(ofPieces.get()), pictureStatus.get(), photoesStatus.get(),
- #                              str(productsTypeListbox.curselection()), str(numberOfPartsListbox.curselection()),
- #                              partsInBlueBin.get(), notes.get(1.0, END)))
-
+            #print("tempAmt: ", isinstance(tempAmt, (int, float)))
+            #print("transDate: {0}, mainAcctOption: {1}, subAcctOption: {2}, beaconOption: {3}".format(self.date.get_date(), self.mainAcctOption.get(), self.subAcctOption.get(), self.beaconOption.get()))
+            #print("amount: {0}, db_crOption: {1}, postToOption: {2}, status: {3}, remark: {4}".format(eval(self.amount.get()), self.db_crOption.get(), self.postToOption.get(), self.status.get(), self.remark.get()))
+            self.sjAcctDB.saveRecords(self.date.get_date(), self.mainAcctOption.get(), self.subAcctOption.get(), self.beaconOption.get(), 
+                                      eval(self.amount.get()), self.db_crOption.get(), self.postToOption.get(), self.status.get(), self.remark.get())
+ 
     def __del__(self):
         print('Destructor for SjAccount class')
 
