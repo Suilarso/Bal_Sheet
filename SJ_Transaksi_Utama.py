@@ -526,6 +526,18 @@ class SjAccount():
         self.saveButton = Button(self.sjAcctWidget, text="Save", command = self.saveButtonCallback)
         self.saveButton.place(x=self.saveButtonX, y=self.saveButtonY, width=self.saveButtonWidth, height=self.fieldHeightConstant)
 
+    def initializeSjAcctScreen(self):
+        self.transDate = datetime(1,1,1).now()  #SJ4300524 - Getting today system date
+        self.date.set_date(str(self.transDate.strftime("%Y-%m-%d")))
+        self.mainAcctOption.set(self.mainAcctOptionList[0])
+        self.subAcctOption.set(self.subAcctOptionList[0])
+        self.beaconOption.set(self.beaconOptionList[0])
+        self.amount.delete(0, END)
+        self.db_crOption.set(self.db_crOptionList[0])
+        self.postToOption.set(self.postToOptionList[0])
+        self.status.delete(0, END)
+        self.remark.delete(0, END)
+
     def verifySjAcctData(self):
         #SJ2060824 - Kita check apa data yg di isi di kotak amount valid sebagai float value
         tempAmount = self.amount.get().strip()
@@ -544,6 +556,7 @@ class SjAccount():
         return retValue
 
     def cancelButtonCallback(self):
+        self.initializeSjAcctScreen()
         pass
 
     def saveButtonCallback(self):
@@ -555,6 +568,7 @@ class SjAccount():
             #print("amount: {0}, db_crOption: {1}, postToOption: {2}, status: {3}, remark: {4}".format(eval(self.amount.get()), self.db_crOption.get(), self.postToOption.get(), self.status.get(), self.remark.get()))
             self.sjAcctDB.saveRecords(self.date.get_date(), self.mainAcctOption.get(), self.subAcctOption.get(), self.beaconOption.get(), 
                                       eval(self.amount.get()), self.db_crOption.get(), self.postToOption.get(), self.status.get(), self.remark.get())
+            self.initializeSjAcctScreen()
  
     def __del__(self):
         print('Destructor for SjAccount class')
