@@ -466,7 +466,7 @@ class SjAccount():
         self.transDateLabel = Label(self.sjAcctWidget, text='Transaction Date: ').place(x=self.transDateLabelX, y=self.transDateLabelY)
         self.date = DateEntry(self.sjAcctWidget, values="Text", year=self.transDate.year, state="readonly", date_pattern="yyyy-mm-dd")
         self.date.place(x=self.transDateEntryX, y=self.transDateEntryY, width = self.transDateEntryWidth, height = self.fieldHeightConstant)
-        
+
         #SJ2280524 - Main Account field
         self.mainAcctLabel = Label(self.sjAcctWidget, text='Main Acct: ').place(x=self.mainAcctLabelX, y=self.mainAcctLabelY)
         self.mainAcctOption = StringVar(self.sjAcctWidget)
@@ -563,10 +563,11 @@ class SjAccount():
         #SJ1290724 - Sebelum data yg tercantum di gui layar di saved ke sjAcctDb, data dari amount field perlu di check validity nya
         
         if (self.verifySjAcctData()):
+            tempKey = self.mainAcctOption.get()+str(self.transDate)[:10]+str(self.transDate)[11:19]
             #print("tempAmt: ", isinstance(tempAmt, (int, float)))
             #print("transDate: {0}, mainAcctOption: {1}, subAcctOption: {2}, beaconOption: {3}".format(self.date.get_date(), self.mainAcctOption.get(), self.subAcctOption.get(), self.beaconOption.get()))
             #print("amount: {0}, db_crOption: {1}, postToOption: {2}, status: {3}, remark: {4}".format(eval(self.amount.get()), self.db_crOption.get(), self.postToOption.get(), self.status.get(), self.remark.get()))
-            self.sjAcctDB.saveRecords(self.date.get_date(), self.mainAcctOption.get(), self.subAcctOption.get(), self.beaconOption.get(), 
+            self.sjAcctDB.saveRecords(tempKey, self.date.get_date(), self.mainAcctOption.get(), self.subAcctOption.get(), self.beaconOption.get(), 
                                       eval(self.amount.get()), self.db_crOption.get(), self.postToOption.get(), self.status.get(), self.remark.get())
             self.initializeSjAcctScreen()
  
@@ -664,6 +665,6 @@ bankAcctDB = SetupSQLConnection('./dbase/financialDB.sqlite', 'bankAcct', ['bank
 #bankAcctWindow = Frame(mainWindow) #, width=5000, height=3000)
 #app = BankAccount(bankAcctWindow, bankAcctDB)
 
-sjAcctDB = SetupSQLConnection('./dbase/financialDB.sqlite', 'sjAcct', ['date', 'mainAcct', 'subAcct', 'beacon', 'amount', 'db_cr', 'post_to', 'status', 'remark'])
+sjAcctDB = SetupSQLConnection('./dbase/financialDB.sqlite', 'sjAcct', ['indexKey', 'date', 'mainAcct', 'subAcct', 'beacon', 'amount', 'db_cr', 'post_to', 'status', 'remark'])
 app = SjAccount(mainWindow, mainAcctDB, subAcctDB, bankAcctDB, sjAcctDB)
 mainloop()  #SJ5310323 - Creating long-running event loop
