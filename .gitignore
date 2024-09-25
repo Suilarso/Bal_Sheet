@@ -4,5 +4,6 @@
 .gitignore
 
 # database dir
-/dbase/financialDB.sqlite
+./dbase/financialDB.sqlite
+./__pycache__/*.*
 /.vs

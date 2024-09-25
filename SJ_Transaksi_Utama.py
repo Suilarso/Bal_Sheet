@@ -5,8 +5,12 @@ from tkinter import *
 from tkinter.messagebox import *
 from tkcalendar import DateEntry  #SJ4300524 - 
 from datetime import datetime  #SJ2280524
+from MainAccount import MainAccount
+from SubAccount import SubAccount
+from BankAccount import BankAccount
 import sqlite3
 
+"""
 #SJ4300323 - This class setup Main Account data entry screen
 class MainAccount:
     def __init__(self, mainWidget, mainAcctDB):
@@ -32,7 +36,7 @@ class MainAccount:
         self.setupMainAcctScreen(mainWidget)
 
     def setupMainAcctScreen(self, mainWidget):
-        """This method is used to setup data entry screen for Main Account. It contains two fields: Main account and Description"""
+        " ""This method is used to setup data entry screen for Main Account. It contains two fields: Main account and Description"" "
         self.mainAcctLabel = Label(mainWidget, text='Main Account: ').grid(row=self.mainAcctLabelRow, column=self.mainAcctLabelCol, padx=5, pady=5)
         self.mainAcct = Entry(mainWidget)
         self.mainAcct.grid(row=self.mainAcctEntryRow, column=self.mainAcctEntryCol, padx=5, pady=5)
@@ -74,7 +78,9 @@ class MainAccount:
 
     def __del__(self):
         print('Destructor for MainAccount class')
+"""
 
+"""
 #SJ1260623 - This class setup GUI for sub-account entry screen
 class SubAccount():
     def __init__(self, mainWidget, subAcctDB):
@@ -101,7 +107,7 @@ class SubAccount():
         self.setupSubAcctScreen(mainWidget)
 
     def setupSubAcctScreen(self, mainWidget):
-        """This method is used to setup data entry screen for Sub-Account. It contains two fields: Sub account and Description"""
+        " ""This method is used to setup data entry screen for Sub-Account. It contains two fields: Sub account and Description"" "
         self.subAcctLabel = Label(mainWidget, text='Sub Account: ').grid(row=self.subAcctLabelRow, column=self.subAcctLabelCol, padx=5, pady=5)
         self.subAcct = Entry(mainWidget)
         self.subAcct.grid(row=self.subAcctEntryRow, column=self.subAcctEntryCol, padx=5, pady=5)
@@ -140,7 +146,9 @@ class SubAccount():
 
     def __del__(self):
         print('Destructor for SubAccount class')
+"""
 
+"""
 #SJ1181223 - This class setup GUI for bank account entry screen
 class BankAccount():
     def __init__(self, mainWidget, bankAcctDB):
@@ -185,8 +193,8 @@ class BankAccount():
         self.setupBankAcctScreen(self.bankAcctWidget)
 
     def setupBankAcctScreen(self, mainWidget):
-        """This method is used to setup data entry screen for Bank Account. It contains four fields: Bank code, Bank name, Amount,
-           and Exchange rate."""
+        " ""This method is used to setup data entry screen for Bank Account. It contains four fields: Bank code, Bank name, Amount,
+           and Exchange rate."" "
 
         #SJ4040124 - Bank code
         self.bankcodeLabel = Label(mainWidget, text='Bank Code: ').grid(row=self.bankCodeLabelRow, column=self.bankCodeLabelCol, padx=5, pady=5)
@@ -349,6 +357,7 @@ class BankAccount():
         print('Unbinding button release 1')
         #self.bankAcctWidget.unbind("<Button-1>")
         #self.bankAcctWidget.unbind("<ButtonRelease-1>")
+"""
 
 #SJ1270523 - This class setup GUI for daily transaction entry screen.
 #SJ1270524 - The data keyed in the entry screen are to be saved in sjAcct table
@@ -650,6 +659,23 @@ def quitter_function():
     #conn.close()  #SJ5310323 - Close database connection, to be un-remarked
     mainWindow.destroy()
 
+#SJ3180924 - This function creates main menu
+def mainMenu(root):
+    menu = Menu()
+    root.config(menu=menu)
+    accounts_menu = Menu(menu, tearoff=0)
+    accounts_menu.add_command(label='Main Account', command=accountsCallback)
+    accounts_menu.add_command(label='Sub Account', command=accountsCallback)
+    accounts_menu.add_command(label='Bank Account', command=accountsCallback)
+    #accounts_menu.add_command(label='Backup', command=lambda parentW=root: toolsCallback(parentW))
+    accounts_menu.add_separator()
+    accounts_menu.add_command(label='Exit', command=quitter_function)
+    menu.add_cascade(label='Account', menu=accounts_menu)
+
+
+def accountsCallback():
+    print("Insode accountsCallback")
+
 #SJ5310323 - Create main window
 mainWindow = Tk()
 mainWindow.title('SJ Transaksi')
@@ -667,4 +693,5 @@ bankAcctDB = SetupSQLConnection('./dbase/financialDB.sqlite', 'bankAcct', ['bank
 
 sjAcctDB = SetupSQLConnection('./dbase/financialDB.sqlite', 'sjAcct', ['indexKey', 'date', 'mainAcct', 'subAcct', 'beacon', 'amount', 'db_cr', 'post_to', 'status', 'remark'])
 app = SjAccount(mainWindow, mainAcctDB, subAcctDB, bankAcctDB, sjAcctDB)
+mainMenu(mainWindow)
 mainloop()  #SJ5310323 - Creating long-running event loop
