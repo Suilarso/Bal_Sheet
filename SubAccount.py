@@ -41,9 +41,9 @@ class SubAccount():
         self.description.grid(row=self.descriptionEntryRow, column=self.descriptionEntryCol, pady=5)
 
         #SJ3200923 - Cancel and Save button
-        self.cancelButton = Button(text='Cancel', command=lambda x=mainWidget: self.cancelButtonCallback(x))
+        self.cancelButton = Button(mainWidget, text='Cancel', command=lambda x=mainWidget: self.cancelButtonCallback(x))
         self.cancelButton.grid(row=self.cancelButtonRow, column=self.cancelButtonCol, pady=10)
-        self.saveButton = Button(text='Save', command=lambda x=mainWidget: self.saveButtonCallback(x))
+        self.saveButton = Button(mainWidget, text='Save', command=lambda x=mainWidget: self.saveButtonCallback(x))
         self.saveButton.grid(row=self.saveButtonRow, column=self.saveButtonCol)
 
         self.initializeSubAcctScreen(mainWidget)

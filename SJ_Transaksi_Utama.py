@@ -674,7 +674,11 @@ def mainMenu(root):
 
 
 def accountsCallback():
-    print("Insode accountsCallback")
+    print("Inside accountsCallback")
+    mainAcctWindow = Toplevel()
+    mainAcctWindow.title('Main Account')
+    mainAcctApp = MainAccount(mainAcctWindow, mainAcctDB)
+    #mainAcctWindow.destroy()
 
 #SJ5310323 - Create main window
 mainWindow = Tk()
