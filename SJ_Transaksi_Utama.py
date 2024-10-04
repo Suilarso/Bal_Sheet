@@ -664,20 +664,34 @@ def mainMenu(root):
     menu = Menu()
     root.config(menu=menu)
     accounts_menu = Menu(menu, tearoff=0)
-    accounts_menu.add_command(label='Main Account', command=accountsCallback)
-    accounts_menu.add_command(label='Sub Account', command=accountsCallback)
-    accounts_menu.add_command(label='Bank Account', command=accountsCallback)
-    #accounts_menu.add_command(label='Backup', command=lambda parentW=root: toolsCallback(parentW))
+    accounts_menu.add_command(label='Main Account', command=lambda accountType="Main": accountsCallback(accountType))
+    accounts_menu.add_command(label='Sub Account', command=lambda accountType="Sub": accountsCallback(accountType))
+    accounts_menu.add_command(label='Bank Account', command=lambda accountType="Bank": accountsCallback(accountType))
+    #accounts_menu.add_command(label='Main Account', command=accountsCallback)
+    #accounts_menu.add_command(label='Sub Account', command=accountsCallback)
+    #accounts_menu.add_command(label='Bank Account', command=accountsCallback)
     accounts_menu.add_separator()
+    #SJ4031024 - SJTODO: find out the effect of quitter_function being called from menu window; concern is in the
+    #SJ4031024 - quitter_function when called main window will be destroyed while mainWindow is still being used
     accounts_menu.add_command(label='Exit', command=quitter_function)
     menu.add_cascade(label='Account', menu=accounts_menu)
 
 
-def accountsCallback():
+def accountsCallback(accountType):
     print("Inside accountsCallback")
     mainAcctWindow = Toplevel()
-    mainAcctWindow.title('Main Account')
-    mainAcctApp = MainAccount(mainAcctWindow, mainAcctDB)
+    #mainAcctWindow.geometry("200x150")
+    mainAcctWindow.lift()
+    mainAcctWindow.grab_set()
+    if accountType == "Main":
+        mainAcctWindow.title('Main Account')
+        mainAcctApp = MainAccount(mainAcctWindow, mainAcctDB)
+    elif accountType == "Sub":
+        mainAcctWindow.title('Sub Account')
+        mainAcctApp = SubAccount(mainAcctWindow, subAcctDB)
+    elif accountType == "Bank":
+        mainAcctWindow.title('Bank Account')
+        mainAcctApp = BankAccount(mainAcctWindow, bankAcctDB)
     #mainAcctWindow.destroy()
 
 #SJ5310323 - Create main window
