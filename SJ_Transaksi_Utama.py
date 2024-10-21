@@ -319,6 +319,7 @@ def mainMenu(root):
     accounts_menu.add_command(label='Main Account', command=lambda accountType="Main": accountsCallback(accountType))
     accounts_menu.add_command(label='Sub Account', command=lambda accountType="Sub": accountsCallback(accountType))
     accounts_menu.add_command(label='Bank Account', command=lambda accountType="Bank": accountsCallback(accountType))
+    accounts_menu.add_command(label='Monthly Transaction', command = monthlyTransactionCallback)
     #accounts_menu.add_command(label='Main Account', command=accountsCallback)
     #accounts_menu.add_command(label='Sub Account', command=accountsCallback)
     #accounts_menu.add_command(label='Bank Account', command=accountsCallback)
@@ -328,7 +329,7 @@ def mainMenu(root):
     accounts_menu.add_command(label='Exit', command=quitter_function)
     menu.add_cascade(label='Account', menu=accounts_menu)
 
-
+#SJ0201024 - General callback function for Main account, Sub account, and Bank account
 def accountsCallback(accountType):
     print("Inside accountsCallback")
     mainAcctWindow = Toplevel()
@@ -345,6 +346,11 @@ def accountsCallback(accountType):
         mainAcctWindow.title('Bank Account')
         mainAcctApp = BankAccount(mainAcctWindow, bankAcctDB)
     #mainAcctWindow.destroy()
+
+#SJ0201024 - Callback for monthly transaction
+def monthlyTransactionCallback():
+    print('Inside monthlyTransactionCallback...')
+    pass
 
 #SJ5310323 - Create main window
 mainWindow = Tk()
