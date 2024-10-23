@@ -8,6 +8,7 @@ from datetime import datetime  #SJ2280524
 from MainAccount import MainAccount
 from SubAccount import SubAccount
 from BankAccount import BankAccount
+from MiscClasses import SelectDateDialog
 import sqlite3
 
 
@@ -350,6 +351,10 @@ def accountsCallback(accountType):
 #SJ0201024 - Callback for monthly transaction
 def monthlyTransactionCallback():
     print('Inside monthlyTransactionCallback...')
+    inputDate = SelectDateDialog(mainWindow)
+    mainWindow.wait_window(inputDate.dateDialog)
+    fromDate = str(inputDate.getFromDate())
+    print("fromDate: ", fromDate)
     pass
 
 #SJ5310323 - Create main window
