@@ -277,15 +277,19 @@ class SetupSQLConnection():
         #readData = self.tableCursor.fetchone()  #SJ0121123 - if use fetchone can use None to check
         readData = self.tableCursor.fetchall()  #SJ0121123 - if use fetchall check using len
         #totalRecords = len(readData)
-        print('Inside readRecord: ', readData)
-        
+        print('Inside readRecord: ', readData)        
         return readData
 
-        #curCursor.execute('SELECT workOrder FROM xxxTableName WHERE workOrder = ? LIMIT 1', (self.workOrder, ))
-        #count = curCursor.fetchone()
-        #if count != None:
-            #count = curCursor.fetchone()[0]
-        #    showwarning(title='Duplicate WOP', message='It seems '+self.workOrder+' had been used.')
+    #SJ3301024 - This method does a complex record retrieval
+    def complexRead(self, fields, conditonClause, tokens):
+        sql = "SELECT "+fields+" FROM "+self.tableName+" WHERE "+conditonClause
+        print("sql: ", sql)
+        #self.tableCursor.execute(sql, (token, ))
+        self.tableCursor.execute(sql, tokens)
+        #curCursor.execute('SELECT date FROM sjAcct WHERE dateReceived >= ? AND dateReceived < ?', (fromDate, toDate))
+        recData = self.tableCursor.fetchall()  #SJ0010522 - if use fetchall check using len
+        print("recData: ", recData)
+        return recData
 
     def saveRecords(self, *data):
         #SJ2060623 - Construct string consisting of record structure of the table to save to
@@ -351,11 +355,30 @@ def accountsCallback(accountType):
 #SJ0201024 - Callback for monthly transaction
 def monthlyTransactionCallback():
     print('Inside monthlyTransactionCallback...')
-    inputDate = SelectDateDialog(mainWindow)
+    inputDate = SelectDateDialog(mainWindow, 'Please select the date to browse the record from')
     mainWindow.wait_window(inputDate.dateDialog)
     fromDate = str(inputDate.getFromDate())
-    print("fromDate: ", fromDate)
-    pass
+    
+    #SJ3301024 - Here we form date string for next month
+    year = int(fromDate[:4])
+    month = int(fromDate[5:7])
+    #day = int(fromDate[8:])
+    day = 1
+    nextMonth = month + 1
+    #SJ3301024 - Disini kita check apa bulan depan mengakibatkan tahun depan
+    if nextMonth > 12:
+        nextMonth -= 12  #SJ3301024 - Dijadikan bulan january
+        year = year + 1  #SJ3301024 - Dijadikan tahun depan
+    toDate = str(year)+'-'+str(nextMonth).zfill(2)+'-'+str(day).zfill(2)
+    #SJ1281024 - Now that the commencing date had been obtained, next is to decide if there are records to be displayed
+    recData = sjAcctDB.complexRead("date", "date >= ? AND date < ?", (fromDate, toDate))
+    totalRecords = len(recData)
+    
+    if totalRecords == 0:
+        #print("No record found ")
+        showwarning(title='No Records Found', message='No records that match your input date.')
+    else:
+        print('recData ', totalRecords, recData)
 
 #SJ5310323 - Create main window
 mainWindow = Tk()

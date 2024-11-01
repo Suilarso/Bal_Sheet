@@ -8,13 +8,14 @@ from datetime import datetime
 
 #SJ2221024 - This class prompts user for a date and return the date to the calling function
 class SelectDateDialog:
-    def __init__(self, master):
+    def __init__(self, master, dialogText):
         self.dateDialog = Toplevel(master)
         #self.fromDate = '0'
         self.fromDate = str(datetime(1,1,1).now())[:10]  #SJ2221024 - Only need the date portion
         #SJ2221024 - Input field for Date received
         self.todayDate = datetime(1,1,1).now()  #SJ1250422 - Getting today system date
-        self.dateReceivedLabel = Label(self.dateDialog, text='Please select the date you wish to browse the record from').grid(row=2, column=1)
+        #self.dateReceivedLabel = Label(self.dateDialog, text='Please select the date you wish to browse the record from').grid(row=2, column=1)
+        self.dateReceivedLabel = Label(self.dateDialog, text=dialogText).grid(row=2, column=1)
         self.dateReceived = DateEntry(self.dateDialog, values="Text", year=self.todayDate.year, state="readonly", date_pattern="yyyy-mm-dd")
         self.dateReceived.grid(row=4, column=1, padx=20, pady=5, sticky=W)
 
