@@ -80,6 +80,25 @@ class SJTable:
         #SJ2221024 - Need to add code to call destroy() method
         print('Destructor for SJTable')
 
+#SJ3271124 - Class ini utk browsing data transaksi
+class BrowsingTransactions:
+    #def __init__(self, sjAcctDB):
+    def  __init__(self, recData):
+        self.rowsPerPage = 10
+        #self.numOfRow = 0
+        self.numOfCol = 9
+        self.totalRecords = len(recData)
+        self.currentPage = 0
+        self.pageFirstRecord = []
+        self.currentRecord = 0
+        self.totalRecordsBrowsed = 0
+
+        print('recData ', self.totalRecords, recData)
+        #browseWindow = Toplevel()
+        #browseTable = SJTable(browseWindow, rowsPerPage, numOfCol)
+
+    def __del__(self):
+        print('Destructor untuk BrowsingTransactions object')
 
 
 

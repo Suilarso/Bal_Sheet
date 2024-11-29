@@ -10,6 +10,7 @@ from SubAccount import SubAccount
 from BankAccount import BankAccount
 from MiscClasses import SelectDateDialog
 from MiscClasses import SJTable  #SJ1111124 - SJTable class
+from MiscClasses import BrowsingTransactions 
 import sqlite3
 
 
@@ -380,11 +381,13 @@ def monthlyTransactionCallback():
         showwarning(title='No Records Found', message='No records that match your input date.')
     else:
         #SJ1111124 - Kesini berarti ada data utk di display
-        rowsPerPage = 10
-        numOfCol = 9
-        print('recData ', totalRecords, recData)
-        browseWindow = Toplevel()
-        browseTable = SJTable(browseWindow, rowsPerPage, numOfCol)
+        #SJ0241124 - Create object untuk browsing
+        browseTrans = BrowsingTransactions(recData)
+        #rowsPerPage = 10
+        #numOfCol = 9
+        #print('recData ', totalRecords, recData)
+        #browseWindow = Toplevel()
+        #browseTable = SJTable(browseWindow, rowsPerPage, numOfCol)
 
 #SJ5310323 - Create main window
 mainWindow = Tk()
