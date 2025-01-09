@@ -2,7 +2,9 @@
 #Date: Oct 22, 24
 
 
+from ast import Pass
 from tkinter import *
+from urllib.request import proxy_bypass
 from tkcalendar import DateEntry
 from datetime import datetime
 
@@ -92,10 +94,112 @@ class BrowsingTransactions:
         self.pageFirstRecord = []
         self.currentRecord = 0
         self.totalRecordsBrowsed = 0
+        self.curRowNumber = self.startRow = 2
 
-        print('recData ', self.totalRecords, recData)
-        #browseWindow = Toplevel()
-        #browseTable = SJTable(browseWindow, rowsPerPage, numOfCol)
+        #print('recData ', self.totalRecords, recData)
+        self.browseWindow = Toplevel()
+        self.browseTable = SJTable(self.browseWindow, self.rowsPerPage, self.numOfCol)
+        self.browsingScreenLayout()
+
+    def browsingScreenLayout(self):
+        #self.browseWindow
+        #SJ3111224 - Use str(chr(923)) for up indicator and capital letter V for down indicator
+        self.upButton = Button(self.browseWindow, text=str(chr(923)), command=lambda x=self.browseTable: self.upButtonCallback(x))
+        self.upButton.grid(row=self.curRowNumber, column=0)
+        self.cancelButton = Button(self.browseWindow, text='Cancel', command=lambda x=self.browseWindow, y=self.browseTable:
+                                   self.cancelButtonCallback(x, y))
+        self.cancelButton.grid(row=self.curRowNumber, column=self.numOfCol+1)
+        self.curRowNumber += 1
+
+        self.downButton = Button(self.browseWindow, text='V', command=lambda x=self.browseTable: self.downButtonCallback(x))
+        self.downButton.grid(row=self.curRowNumber, column=0)
+        self.selectButton = Button(self.browseWindow, text='Select', command=lambda x=master, y=self.browseWindow, z=self.browseTable:
+                                   self.selectButtonCallback(x, y, z))  #SJ4121224 - SJTODO: Need to solve parameter var master, don't think is needed
+        self.selectButton.grid(row=self.curRowNumber, column=self.numOfCol+1)
+        self.curRowNumber += 1
+        
+        self.prevPageButton = Button(self.browseWindow, text=str(chr(171)), command=lambda x=self.browseTable, y=self.recData: self.prevPageButtonCallback(x, y))
+        self.prevPageButton.grid(row=self.curRowNumber, column=0)
+        self.curRowNumber += 1
+        self.nextPageButton = Button(self.browseWindow, text=str(chr(187)), command=lambda x=self.browseTable, y=self.recData: self.nextPageButtonCallback(x, y))
+        self.nextPageButton.grid(row=self.curRowNumber, column=0)
+        
+        #SJ6040125 - re-intialize global var
+        if (len(self.pageFirstRecord) != 0):
+            del self.pageFirstRecord[:]
+        self.totalRecordsBrowsed = 0
+
+        self.numOfRow = self.rowsPerPage if self.totalRecords >= self.rowsPerPage else self.totalRecords
+        self.currentRecord = 0  #SJ1090522 - valid value = 0 to numOfRow - 1
+        self.currentPage = 0  #SJ5130522 - First page of records
+        self.pageFirstRecord.append(0)  #SJ2100522 - 0 being the first record of the total searched records
+        self.totalRecordsBrowsed += self.numOfRow
+        print('numOfRow, pageFirstRecord, totalRecordsBrowsed: ', self.numOfRow, self.pageFirstRecord, self.totalRecordsBrowsed)
+        
+        for i in range(self.numOfRow):
+            self.browseTable.addRowOfData(i, self.recData[i])
+
+        self.browseTable.highlightRow(self.currentRecord, self.numOfCol)
+
+    def upButtonCallback(self):
+        #SJ3080125 - Can only move up if currentRecord is not pointing to first record of the table
+        if self.currentRecord > 0:
+            self.browseTable.deHighlightRow(self.currentRecord, self.numOfCol)
+            self.currentRecord -= 1
+            self.browseTable.highlightRow(self.currentRecord, self.numOfCol)
+        else:
+            pass
+
+    def downButtonCallback(self):
+        #SJ3080125 - Can only move down if currentRecord is not pointing to the last record of the table
+        if self.currentRecord < (self.numOfRow - 1):
+            self.browseTable.deHighlightRow(self.currentRecord, self.numOfCol)
+            self.currentRecord += 1
+            self.browseTable.highlightRow(self.currentRecord, self.numOfCol)
+        else:
+            pass
+
+    def prevPageButtonCallback(self):
+        #SJ3080125 - Can go back to previous page if only current page is beyond first page
+        if self.currentPage != 0:
+            del self.pageFirstRecord[self.currentPage]  #SJ3080125 - remove the first record of current page before going back to previous page
+            self.currentPage -= 1
+            self.totalRecordsBrowsed -= self.numOfRow
+            self.currentRecord = 0
+
+            #SJ3080125 - Clear table before populating the table with new page of data
+            self.browseTable.clearTable(self.numOfRow, self.numOfCol)
+            self.numOfRow = self.rowsPerPage
+            for i in range(self.numOfRow):
+                self.browseTable.addRowOfData(i, self.recData[self.pageFirstRecord[self.currentPage] + i])
+            self.browseTable.highlightRow(self.currentRecord, self.numOfCol)
+
+        print('currentPage, numOfRow, pageFirstRecord, totalRecordsBrowsed: ',
+               self.currentPage, self.numOfRow, self.pageFirstRecord, self.totalRecordsBrowsed)
+
+    def nextPageButtonCallback(self):
+        #SJ3080125 - Computer how many records left available for display
+        availRecord = self.totalRecords - self.totalRecordsBrowsed
+        if availRecord == 0:
+            #SJ3080125 - If comes here, means no more records available for browsing
+            pass
+            #return
+        else:
+            #SJ3080125 - If comes here, means there are still records to be displayed
+            self.currentRecord = 0
+            self.numOfRow = self.rowsPerPage if availRecord >= self.rowsPerPage else availRecord
+            self.pageFirstRecord.append(self.pageFirstRecord[self.currentPage] + self.rowsPerPage)
+            self.currentPage += 1
+            self.totalRecordsBrowsed += self.numOfRow
+
+            #SJ3080125 - Clear table before populating the table with new page of data
+            self.browseTable.clearTable(self.rowsPerPage, self.numOfCol)
+            for i in range(self.numOfRow):
+                self.browseTable.addRowOfData(i, self.recData[self.pageFirstRecord[self.currentPage] + i])
+            self.browseTable.highlightRow(self.currentRecord, self.numOfCol)
+
+            print('currentPage, numOfRow, pageFirstRecord, totalRecordsBrowsed: ',
+                   self.currentPage, self.numOfRow, self.pageFirstRecord, self.totalRecordsBrowsed)
 
     def __del__(self):
         print('Destructor untuk BrowsingTransactions object')
