@@ -285,7 +285,7 @@ class SetupSQLConnection():
     #SJ3301024 - This method does a complex record retrieval
     def complexRead(self, fields, conditonClause, tokens):
         sql = "SELECT "+fields+" FROM "+self.tableName+" WHERE "+conditonClause
-        print("sql: ", sql)
+        print("sql: , tokens: ", sql, tokens)
         #self.tableCursor.execute(sql, (token, ))
         self.tableCursor.execute(sql, tokens)
         #curCursor.execute('SELECT date FROM sjAcct WHERE dateReceived >= ? AND dateReceived < ?', (fromDate, toDate))
@@ -373,7 +373,7 @@ def monthlyTransactionCallback():
         year = year + 1  #SJ3301024 - Dijadikan tahun depan
     toDate = str(year)+'-'+str(nextMonth).zfill(2)+'-'+str(day).zfill(2)
     #SJ1281024 - Now that the commencing date had been obtained, next is to decide if there are records to be displayed
-    recData = sjAcctDB.complexRead("date", "date >= ? AND date < ?", (fromDate, toDate))
+    recData = sjAcctDB.complexRead("date, mainAcct, subAcct, amount, post_to, status", "date >= ? AND date < ?", (fromDate, toDate))
     totalRecords = len(recData)
     
     if totalRecords == 0:

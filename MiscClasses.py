@@ -86,10 +86,11 @@ class SJTable:
 class BrowsingTransactions:
     #def __init__(self, sjAcctDB):
     def  __init__(self, recData):
+        self.recData = recData
         self.rowsPerPage = 10
         #self.numOfRow = 0
-        self.numOfCol = 9
-        self.totalRecords = len(recData)
+        self.numOfCol = 6
+        self.totalRecords = len(self.recData)
         self.currentPage = 0
         self.pageFirstRecord = []
         self.currentRecord = 0
@@ -113,8 +114,8 @@ class BrowsingTransactions:
 
         self.downButton = Button(self.browseWindow, text='V', command=lambda x=self.browseTable: self.downButtonCallback(x))
         self.downButton.grid(row=self.curRowNumber, column=0)
-        self.selectButton = Button(self.browseWindow, text='Select', command=lambda x=master, y=self.browseWindow, z=self.browseTable:
-                                   self.selectButtonCallback(x, y, z))  #SJ4121224 - SJTODO: Need to solve parameter var master, don't think is needed
+        self.selectButton = Button(self.browseWindow, text='Select', command=lambda x=self.browseWindow, y=self.browseTable:
+                                   self.selectButtonCallback(x, y))
         self.selectButton.grid(row=self.curRowNumber, column=self.numOfCol+1)
         self.curRowNumber += 1
         
@@ -200,6 +201,14 @@ class BrowsingTransactions:
 
             print('currentPage, numOfRow, pageFirstRecord, totalRecordsBrowsed: ',
                    self.currentPage, self.numOfRow, self.pageFirstRecord, self.totalRecordsBrowsed)
+
+    def cancelButtonCallback(self, browseWindow, browseTable):
+        #self.browseButton.configure(state=NORMAL)
+        del(self.browseTable)
+        self.browseWindow.destroy()
+
+    def selectButtonCallback(self, browseWindow, browseTable):
+        pass
 
     def __del__(self):
         print('Destructor untuk BrowsingTransactions object')
