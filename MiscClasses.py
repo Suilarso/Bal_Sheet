@@ -41,25 +41,32 @@ class SJTable:
         self.browseTable = master #Toplevel(master)
         self.entryFields = [[0 for x in range(numOfCol)] for y in range(numOfRow)]
         self.rowNumber = 2
+        self.numOfCol = numOfCol
         #self.label = Label(master, text='Records Browser')
         #self.label.grid(row=0, column=0)
         # code for creating table
         for i in range(numOfRow):
             for j in range(numOfCol):
                 #self.e = Entry(self.browseTable, width=20, fg='blue', font=('Arial',16,'bold'))
-                self.e = Entry(self.browseTable, width=20, fg='black', font=('Arial',12))
+                self.e = Entry(self.browseTable, width=15, fg='black', font=('Arial',12))
                 self.e.grid(row=self.rowNumber+i, column=1+j)
                 self.entryFields[i][j] = self.e
 
-    def addRowOfData(self, rowNumber, recData):
+    #def addRowOfData(self, rowNumber, recData):
         #SJ2221024 - seq of input data: workOrder, customerName, dateReceived
-        self.entryFields[rowNumber][0].insert(0, recData[0])
-        self.entryFields[rowNumber][0].configure(state=DISABLED)
-        self.entryFields[rowNumber][1].insert(0, recData[1])
-        self.entryFields[rowNumber][1].configure(state=DISABLED)
+    #    self.entryFields[rowNumber][0].insert(0, recData[0])
+    #    self.entryFields[rowNumber][0].configure(state=DISABLED)
+    #    self.entryFields[rowNumber][1].insert(0, recData[1])
+    #    self.entryFields[rowNumber][1].configure(state=DISABLED)
         #self.entryFields[rowNumber][2].set_date(recData[2])
-        self.entryFields[rowNumber][2].insert(0, recData[2])
-        self.entryFields[rowNumber][2].configure(state=DISABLED)
+    #    self.entryFields[rowNumber][2].insert(0, recData[2])
+    #    self.entryFields[rowNumber][2].configure(state=DISABLED)
+
+    def addRowOfData(self, rowNumber, recData):
+        #SJ2221024 - seq of input data: 
+        for col in range(self.numOfCol):
+            self.entryFields[rowNumber][col].insert(0, recData[col])
+            self.entryFields[rowNumber][col].configure(state=DISABLED)
 
     def highlightRow(self, rowNumber, numOfCol):
         for i in range(numOfCol):

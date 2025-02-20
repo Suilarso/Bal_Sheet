@@ -285,10 +285,7 @@ class SetupSQLConnection():
     #SJ3301024 - This method does a complex record retrieval
     def complexRead(self, fields, conditonClause, tokens):
         sql = "SELECT "+fields+" FROM "+self.tableName+" WHERE "+conditonClause
-        print("sql: , tokens: ", sql, tokens)
-        #self.tableCursor.execute(sql, (token, ))
         self.tableCursor.execute(sql, tokens)
-        #curCursor.execute('SELECT date FROM sjAcct WHERE dateReceived >= ? AND dateReceived < ?', (fromDate, toDate))
         recData = self.tableCursor.fetchall()  #SJ0010522 - if use fetchall check using len
         print("recData: ", recData)
         return recData
