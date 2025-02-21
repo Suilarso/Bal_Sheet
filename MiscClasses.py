@@ -94,9 +94,9 @@ class BrowsingTransactions:
     #def __init__(self, sjAcctDB):
     def  __init__(self, recData):
         self.recData = recData
-        self.rowsPerPage = 10
+        self.rowsPerPage = 10  #SJ4200225 - This can be passed in as the class is being instanced
         #self.numOfRow = 0
-        self.numOfCol = 6
+        self.numOfCol = 6  #SJ4200225 - This can be passed in as the class is being instanced
         self.totalRecords = len(self.recData)
         self.currentPage = 0
         self.pageFirstRecord = []
@@ -112,24 +112,30 @@ class BrowsingTransactions:
     def browsingScreenLayout(self):
         #self.browseWindow
         #SJ3111224 - Use str(chr(923)) for up indicator and capital letter V for down indicator
-        self.upButton = Button(self.browseWindow, text=str(chr(923)), command=lambda x=self.browseTable: self.upButtonCallback(x))
+        #self.upButton = Button(self.browseWindow, text=str(chr(923)), command=lambda x=self.browseTable: self.upButtonCallback(x))
+        self.upButton = Button(self.browseWindow, text=str(chr(923)), command=self.upButtonCallback)
         self.upButton.grid(row=self.curRowNumber, column=0)
-        self.cancelButton = Button(self.browseWindow, text='Cancel', command=lambda x=self.browseWindow, y=self.browseTable:
-                                   self.cancelButtonCallback(x, y))
+        #self.cancelButton = Button(self.browseWindow, text='Cancel', command=lambda x=self.browseWindow, y=self.browseTable:
+        #                           self.cancelButtonCallback(x, y))
+        self.cancelButton = Button(self.browseWindow, text='Cancel', command=self.cancelButtonCallback)
         self.cancelButton.grid(row=self.curRowNumber, column=self.numOfCol+1)
         self.curRowNumber += 1
 
-        self.downButton = Button(self.browseWindow, text='V', command=lambda x=self.browseTable: self.downButtonCallback(x))
+        #self.downButton = Button(self.browseWindow, text='V', command=lambda x=self.browseTable: self.downButtonCallback(x))
+        self.downButton = Button(self.browseWindow, text='V', command=self.downButtonCallback)
         self.downButton.grid(row=self.curRowNumber, column=0)
-        self.selectButton = Button(self.browseWindow, text='Select', command=lambda x=self.browseWindow, y=self.browseTable:
-                                   self.selectButtonCallback(x, y))
+        #self.selectButton = Button(self.browseWindow, text='Select', command=lambda x=self.browseWindow, y=self.browseTable:
+        #                           self.selectButtonCallback(x, y))
+        self.selectButton = Button(self.browseWindow, text='Select', command=self.selectButtonCallback)
         self.selectButton.grid(row=self.curRowNumber, column=self.numOfCol+1)
         self.curRowNumber += 1
         
-        self.prevPageButton = Button(self.browseWindow, text=str(chr(171)), command=lambda x=self.browseTable, y=self.recData: self.prevPageButtonCallback(x, y))
+        #self.prevPageButton = Button(self.browseWindow, text=str(chr(171)), command=lambda x=self.browseTable, y=self.recData: self.prevPageButtonCallback(x, y))
+        self.prevPageButton = Button(self.browseWindow, text=str(chr(171)), command=self.prevPageButtonCallback)
         self.prevPageButton.grid(row=self.curRowNumber, column=0)
         self.curRowNumber += 1
-        self.nextPageButton = Button(self.browseWindow, text=str(chr(187)), command=lambda x=self.browseTable, y=self.recData: self.nextPageButtonCallback(x, y))
+        #self.nextPageButton = Button(self.browseWindow, text=str(chr(187)), command=lambda x=self.browseTable, y=self.recData: self.nextPageButtonCallback(x, y))
+        self.nextPageButton = Button(self.browseWindow, text=str(chr(187)), command=self.nextPageButtonCallback)
         self.nextPageButton.grid(row=self.curRowNumber, column=0)
         
         #SJ6040125 - re-intialize global var
@@ -209,12 +215,14 @@ class BrowsingTransactions:
             print('currentPage, numOfRow, pageFirstRecord, totalRecordsBrowsed: ',
                    self.currentPage, self.numOfRow, self.pageFirstRecord, self.totalRecordsBrowsed)
 
-    def cancelButtonCallback(self, browseWindow, browseTable):
+    #def cancelButtonCallback(self, browseWindow, browseTable):
+    def cancelButtonCallback(self):
         #self.browseButton.configure(state=NORMAL)
         del(self.browseTable)
         self.browseWindow.destroy()
 
-    def selectButtonCallback(self, browseWindow, browseTable):
+    #def selectButtonCallback(self, browseWindow, browseTable):
+    def selectButtonCallback(self):
         pass
 
     def __del__(self):

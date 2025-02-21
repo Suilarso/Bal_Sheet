@@ -380,11 +380,6 @@ def monthlyTransactionCallback():
         #SJ1111124 - Kesini berarti ada data utk di display
         #SJ0241124 - Create object untuk browsing
         browseTrans = BrowsingTransactions(recData)
-        #rowsPerPage = 10
-        #numOfCol = 9
-        #print('recData ', totalRecords, recData)
-        #browseWindow = Toplevel()
-        #browseTable = SJTable(browseWindow, rowsPerPage, numOfCol)
 
 #SJ5310323 - Create main window
 mainWindow = Tk()
