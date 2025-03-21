@@ -380,6 +380,7 @@ def monthlyTransactionCallback():
         #SJ1111124 - Kesini berarti ada data utk di display
         #SJ0241124 - Create object untuk browsing
         browseTrans = BrowsingTransactions(recData)
+        browseTrans.browsingScreenLayout()
 
 #SJ5310323 - Create main window
 mainWindow = Tk()

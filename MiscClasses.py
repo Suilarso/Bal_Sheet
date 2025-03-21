@@ -107,7 +107,7 @@ class BrowsingTransactions:
         #print('recData ', self.totalRecords, recData)
         self.browseWindow = Toplevel()
         self.browseTable = SJTable(self.browseWindow, self.rowsPerPage, self.numOfCol)
-        self.browsingScreenLayout()
+        #self.browsingScreenLayout()
 
     def browsingScreenLayout(self):
         #self.browseWindow
